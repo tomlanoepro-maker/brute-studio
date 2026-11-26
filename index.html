@@ -275,11 +275,11 @@ a.btn{text-decoration:none}
         <canvas id="frameCv" width="450" height="600" hidden></canvas>
         <canvas id="ghostCv" class="ghost" width="450" height="600" hidden></canvas>
         <svg viewBox="0 0 900 1200" aria-hidden="true">
-          <ellipse cx="450" cy="510" rx="190" ry="250" fill="none" stroke="#FFF6EC" stroke-width="4" stroke-dasharray="14 12" opacity=".85"/>
+          <ellipse cx="450" cy="500" rx="135" ry="175" fill="none" stroke="#FFF6EC" stroke-width="4" stroke-dasharray="14 12" opacity=".85"/>
           <line x1="0" y1="480" x2="900" y2="480" stroke="#E73F12" stroke-width="4"/>
           <line x1="450" y1="0" x2="450" y2="1200" stroke="#FFF6EC" stroke-width="2" opacity=".35"/>
-          <circle cx="385" cy="480" r="16" fill="none" stroke="#E73F12" stroke-width="4"/>
-          <circle cx="515" cy="480" r="16" fill="none" stroke="#E73F12" stroke-width="4"/>
+          <circle cx="402" cy="480" r="12" fill="none" stroke="#E73F12" stroke-width="4"/>
+          <circle cx="498" cy="480" r="12" fill="none" stroke="#E73F12" stroke-width="4"/>
           <text x="20" y="464" fill="#E73F12" font-family="Mono, sans-serif" font-weight="700" font-size="30">YEUX</text>
         </svg>
         <div class="empty" id="frameEmpty" hidden><b>Caméra indisponible</b><span id="camErr">Autorise l'appareil photo pour Safari (Réglages, Safari, Appareil photo), ou utilise la galerie.</span></div>
@@ -292,7 +292,7 @@ a.btn{text-decoration:none}
         <input type="file" id="fileIn" accept="image/*" capture="environment" hidden>
       </div>
       <div class="editctl" id="editCtl" hidden>
-        <div class="tools"><label for="zoom">Zoom</label><input type="range" id="zoom" min="0.6" max="2.6" step="0.01" value="1"></div>
+        <div class="tools"><label for="zoom">Zoom</label><input type="range" id="zoom" min="1" max="3" step="0.01" value="1"></div>
         <div class="row"><button class="btn ghost" id="retakeBtn">Reprendre</button></div>
       </div>
       <div class="row" style="justify-content:center"><button class="btn ghost small" id="ghostBtn" hidden aria-pressed="true" style="align-self:center">Avant visible</button></div>
@@ -479,7 +479,13 @@ function shade(hex, amt) { const n = parseInt(hex.slice(1), 16); const f = (x) =
 
 /* ---------- photo framing ---------- */
 function newPhoto(src) { return { src, w: src.width, h: src.height, s: 1, x: 0, y: 0, _cache: null, _key: "" }; }
+function clampPhoto(p) { // the photo always fills the frame: no empty borders
+  p.s = Math.min(3, Math.max(1, p.s));
+  const base = Math.max(FW / p.w, FH / p.h) * p.s, mx = (p.w * base - FW) / 2, my = (p.h * base - FH) / 2;
+  p.x = Math.min(mx, Math.max(-mx, p.x)); p.y = Math.min(my, Math.max(-my, p.y));
+}
 function drawPhoto(ctx, p, k) { // k = output scale relative to FW
+  clampPhoto(p);
   const base = Math.max(FW / p.w, FH / p.h) * p.s;
   const w = p.w * base, h = p.h * base;
   ctx.fillStyle = "#2a2522"; ctx.fillRect(0, 0, FW * k, FH * k);
@@ -864,7 +870,7 @@ frame.addEventListener("pointermove", (e) => {
   if (pts.size === 1) { p.x += (e.clientX - prev.x) * ratio; p.y += (e.clientY - prev.y) * ratio; }
   else if (pts.size === 2) {
     const [a, b] = [...pts.values()], dist = Math.hypot(a.x - b.x, a.y - b.y);
-    if (last) p.s = Math.min(2.6, Math.max(.6, p.s * dist / last)); last = dist;
+    if (last) p.s = Math.min(3, Math.max(1, p.s * dist / last)); last = dist;
   }
   drawFrame();
 });
