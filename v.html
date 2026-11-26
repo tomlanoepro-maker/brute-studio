@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Ton avant/après · BRUTE</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F5F1EB">
+<link rel="icon" type="image/png" href="img/icon-192.png">
+<style>
+@font-face{font-family:"Mono";src:url("fonts/Monoglyphic-Light.otf") format("opentype");font-weight:300;font-display:swap}
+@font-face{font-family:"Mono";src:url("fonts/Monoglyphic-Medium.otf") format("opentype");font-weight:500;font-display:swap}
+:root{--papaye:#E73F12;--black:#0B0605;--creme:#FFF6EC;--ground:#F5F1EB;--soft:rgba(11,6,5,.55);color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;min-height:100vh;background:var(--ground);color:var(--black);font-family:"Mono","Helvetica Neue",Arial,sans-serif;font-weight:300;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.horizon{position:fixed;inset:auto 0 0 0;height:55vh;z-index:-1;pointer-events:none;
+  background:radial-gradient(120% 85% at 50% 118%,#C42114 0%,#E73F12 28%,#F07A3A 46%,#F6C79A 62%,rgba(245,241,235,0) 80%)}
+main{max-width:460px;margin:0 auto;padding-block:28px 40px;display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center}
+.logo{width:190px;height:auto}
+h1{font-weight:300;font-size:30px;letter-spacing:-.02em;margin:0;line-height:1.05}
+.pic{width:100%;border-radius:20px;box-shadow:0 18px 40px rgba(11,6,5,.25);display:block;-webkit-touch-callout:default;background:#2a2522;min-height:200px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:16px 26px;font:inherit;font-weight:500;font-size:16px;color:var(--creme);cursor:pointer;
+  background:linear-gradient(160deg,#F2803F 0%,#E73F12 55%,#D52A18 100%);box-shadow:0 8px 22px rgba(231,63,18,.28);text-decoration:none}
+p{margin:0;color:var(--soft);font-size:14px;max-width:34ch}
+.foot{font-size:12px;color:var(--soft)}
+</style>
+</head>
+<body>
+<div class="horizon" aria-hidden="true"></div>
+<main>
+  <img class="logo" src="img/logo-noir.webp" alt="BRUTE coiffure masculine">
+  <h1>Ton avant/après</h1>
+  <img class="pic" id="pic" alt="Avant/après chez BRUTE" hidden>
+  <p id="msg">Chargement…</p>
+  <button class="btn" id="save" hidden>Enregistrer l'image</button>
+  <p class="foot">Tu peux aussi appuyer longuement sur l'image pour l'enregistrer.</p>
+</main>
+<script>
+(() => {
+  const SUPA_URL = "https://biifxznervcpwtckqggu.supabase.co";
+  const path = decodeURIComponent(location.hash.slice(1));
+  const msg = document.getElementById("msg"), pic = document.getElementById("pic"), save = document.getElementById("save");
+  if (!/^[0-9a-f-]{36}\/[0-9a-f]{24}$/.test(path)) { msg.textContent = "Ce lien n'est pas valide."; return; }
+  const url = `${SUPA_URL}/storage/v1/object/public/visuels/${path}.jpg`;
+  let blob = null;
+  fetch(url).then(r => r.ok ? r.blob() : Promise.reject(r.status)).then(b => {
+    blob = b; pic.src = URL.createObjectURL(b); pic.hidden = false; save.hidden = false;
+    msg.textContent = "Merci pour ta confiance. À très vite chez BRUTE.";
+  }).catch(() => { msg.textContent = "Ce visuel n'est plus disponible. Il a peut-être été supprimé."; });
+  save.onclick = async () => {
+    if (!blob) return;
+    const f = new File([blob], "BRUTE-avant-apres.jpg", { type: "image/jpeg" });
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    const a = document.createElement("a"); a.href = pic.src; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
+  };
+})();
+</script>
+</body>
+</html>

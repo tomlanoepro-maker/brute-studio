@@ -209,25 +209,39 @@ a.btn{text-decoration:none}
     <img src="img/logo-noir.webp" alt="BRUTE coiffure masculine">
     <div class="seg" role="group" aria-label="Espace">
       <button id="roleC" aria-pressed="true">Coiffeur</button>
-      <button id="roleG" aria-pressed="false">Gérant</button>
+      <button id="roleG" aria-pressed="false" hidden>Gérant</button>
     </div>
   </div>
 
+  <!-- AUTH -->
+  <section id="s-auth" class="stephead" hidden style="gap:18px;padding-top:18px">
+    <div class="homehead"><p class="place">Studio BRUTE</p><p class="muted">Photos avant/après du salon</p></div>
+    <form id="authForm" class="glass namecard" novalidate>
+      <h2 id="authTitle" style="font-size:30px">Connexion</h2>
+      <div class="field"><label for="aUser">Nom</label><input id="aUser" autocomplete="username" autocapitalize="words" autocorrect="off" spellcheck="false" placeholder="Ex. Tom"></div>
+      <div class="field"><label for="aPass">Mot de passe</label><input id="aPass" type="password" autocomplete="current-password" placeholder="6 caractères minimum"></div>
+      <div class="field" id="aCodeF" hidden><label for="aCode" id="aCodeL">Code du salon</label><input id="aCode" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" placeholder="Donné par le gérant"></div>
+      <button class="btn" type="submit" id="authBtn">Se connecter</button>
+      <span class="sent" id="authErr" hidden></span>
+    </form>
+    <div class="row wrap" style="justify-content:center">
+      <button class="btn small ghost" id="modeLogin" hidden>J'ai déjà un compte</button>
+      <button class="btn small ghost" id="modeSignup">Créer mon compte coiffeur</button>
+      <button class="btn small ghost" id="modeGerant">Créer le compte gérant</button>
+    </div>
+  </section>
+
   <!-- HOME -->
-  <section id="s-home" class="stephead" style="gap:18px">
+  <section id="s-home" class="stephead" hidden style="gap:18px">
     <div class="homehead">
       <p class="place">Studio BRUTE</p>
       <p class="muted" id="today"></p>
     </div>
     <div class="big"><b id="weekCount">0</b><span class="muted">transformations cette semaine</span></div>
-    <form class="glass namecard" id="nameCard" hidden>
-      <label for="meInput"><b style="font-weight:500">Ton prénom de coiffeur</b><br><span class="muted" style="font-size:13px">Il apparaît dans l'espace gérant.</span></label>
-      <div class="row"><input id="meInput" autocomplete="off" placeholder="Ex. Tom"><button class="btn small" type="submit">OK</button></div>
-    </form>
     <div class="glass stats">
       <div><b id="hPub">0</b><small>publiables</small></div>
       <div><b id="hPriv">0</b><small>privées</small></div>
-      <button type="button" id="meBtn" class="mebtn"><b id="meName">?</b><small>coiffeur · modifier</small></button>
+      <button type="button" id="meBtn" class="mebtn"><b id="meName">?</b><small id="meSub">se déconnecter</small></button>
     </div>
     <div class="orbwrap">
       <button class="orb" id="startBtn" aria-label="Nouvelle transformation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
@@ -310,19 +324,19 @@ a.btn{text-decoration:none}
     <div class="sendgrid">
       <div class="opt glass">
         <div class="field"><label for="msgText">Message pour le client</label><textarea id="msgText" rows="4"></textarea></div>
-        <button class="btn" id="shareBtn">Envoyer le visuel</button>
-        <p class="note">Ouvre le partage de l'iPhone avec l'image : choisis Messages, WhatsApp ou Mail. Le message est copié en même temps : dans la conversation, appuie dans le champ texte puis « Coller ».</p>
+        <span class="sent" id="syncState"></span>
+        <a class="btn" id="smsMain" href="#">Envoyer par SMS</a>
+        <button class="btn ghost" id="shareBtn">Partager l'image (WhatsApp, AirDrop…)</button>
+        <p class="note" id="sendNote"></p>
         <span class="sent" id="shareMsg" hidden></span>
       </div>
       <div class="opt glass">
-        <header><h3>SMS</h3><span class="muted" id="smsTo" style="font-size:14px;user-select:all;-webkit-user-select:all"></span></header>
+        <header><h3>Numéro</h3><span class="muted" id="smsTo" style="font-size:14px;user-select:all;-webkit-user-select:all"></span></header>
         <div class="row wrap">
-          <a class="btn small" id="smsLink" href="#">Ouvrir Messages</a>
           <button class="btn small ghost" id="copyMsg">Copier le message</button>
           <button class="btn small ghost" id="copyTel">Copier le numéro</button>
         </div>
         <span class="sent" id="copyInfo" hidden></span>
-        <p class="note">Ouvre Messages vers ce numéro avec le texte ; ajoute l'image depuis tes Photos. Pour l'instant le SMS part de ton numéro ; l'expéditeur « BRUTE » arrive avec la version finale.</p>
       </div>
       <div class="opt glass" id="mailOpt">
         <header><h3>Mail</h3><span class="muted" id="mailTo" style="font-size:14px;user-select:all;-webkit-user-select:all"></span></header>
@@ -351,7 +365,7 @@ a.btn{text-decoration:none}
     <div class="chips" id="teamChips"></div>
     <div class="gallery" id="gallery"></div>
     <p class="muted empty-list" id="galEmpty">Aucune transformation enregistrée.</p>
-    <p class="note">Version d'essai : les transformations sont gardées sur ce téléphone uniquement, et supprimées automatiquement après 1 an. Le partage entre tous les téléphones du salon arrive avec la version finale.</p>
+    <p class="note">Toutes les transformations de tous les coiffeurs, sauvegardées en ligne. Chaque visuel est supprimé automatiquement 1 an après la séance.</p>
   </section>
 </div>
 
@@ -365,6 +379,7 @@ a.btn{text-decoration:none}
     <button class="btn small ghost" id="sheetClose">Fermer</button>
   </div>
 </div>
+<script src="lib/supabase.js"></script>
 <script>
 (() => {
 const FW = 900, FH = 1200, EYE = 480; // canonical portrait frame, eye line
@@ -382,7 +397,6 @@ const S = {
   role: "coiffeur",
   client: {}, avant: null, apres: null, which: "avant",
   fmt: "9x16", tpl: "degrade", grain: true, ghost: true,
-  history: [],
 };
 
 /* ---------- assets ---------- */
@@ -592,27 +606,38 @@ function compose(cv, fmt, tpl, A, B, opts = {}) {
   return cv;
 }
 
+/* ---------- backend ---------- */
+const SUPA_URL = "https://biifxznervcpwtckqggu.supabase.co";
+const SUPA_KEY = "sb_publishable_cpbEX1oCiP6dRcNo_8yTxA_lfn3yPvI";
+const sb = window.supabase && window.supabase.createClient
+  ? window.supabase.createClient(SUPA_URL, SUPA_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: "brute-auth" } })
+  : null;
+const APP_URL = new URL("./", location.href).href;
+const publicUrl = (path) => `${SUPA_URL}/storage/v1/object/public/visuels/${path}`;
+
 /* ---------- navigation ---------- */
-const screens = ["home", "client", "shoot", "compose", "send", "manager"];
+const screens = ["auth", "home", "client", "shoot", "compose", "send", "manager"];
 function show(name) {
   if (name !== "shoot") stopCam();
   for (const s of screens) $("s-" + s).hidden = s !== name;
+  document.querySelector(".top").hidden = name === "auth";
   window.scrollTo(0, 0);
 }
 function steps(el, n) { el.innerHTML = ""; for (let i = 1; i <= 5; i++) { const s = document.createElement("span"); if (i <= n) s.className = "on"; el.appendChild(s); } }
 document.querySelectorAll(".steps[data-step]").forEach(el => steps(el, +el.dataset.step));
 document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
 
-function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3200); }
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3400); }
 
-/* role switch */
-function setRole(r) {
-  S.role = r; $("roleC").setAttribute("aria-pressed", r === "coiffeur"); $("roleG").setAttribute("aria-pressed", r === "gerant");
-  if (r === "gerant") { renderManager(); show("manager"); } else { renderHome(); show("home"); }
+/* view switch (gérant only) */
+S.view = "coiffeur";
+function setView(r) {
+  S.view = r; $("roleC").setAttribute("aria-pressed", r === "coiffeur"); $("roleG").setAttribute("aria-pressed", r === "gerant");
+  if (r === "gerant") { show("manager"); renderManager(); } else { show("home"); renderHome(); }
 }
-$("roleC").onclick = () => setRole("coiffeur"); $("roleG").onclick = () => setRole("gerant");
+$("roleC").onclick = () => setView("coiffeur"); $("roleG").onclick = () => setView("gerant");
 
-/* ---------- storage: this phone only (IndexedDB), memory fallback ---------- */
+/* ---------- local queue: visuals waiting to be uploaded (IndexedDB) ---------- */
 const DB = (() => {
   let dbp = null, mem = [];
   function open() {
@@ -641,27 +666,88 @@ const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
 };
-S.me = store.get("brute-me") || "";
 const urls = new Map();
-function urlFor(rec, field) { const k = rec.id + field; if (!urls.has(k)) urls.set(k, URL.createObjectURL(rec[field])); return urls.get(k); }
-function dropUrls(id) { for (const f of ["png", "thumb"]) { const k = id + f; if (urls.has(k)) { URL.revokeObjectURL(urls.get(k)); urls.delete(k); } } }
+function blobUrl(id, blob) { if (!urls.has(id)) urls.set(id, URL.createObjectURL(blob)); return urls.get(id); }
 const toBlob = (cv, type, q) => new Promise(r => cv.toBlob(r, type, q));
 const YEAR = 365 * 24 * 3600 * 1000;
-async function loadHistory() {
-  const all = await DB.all(), now = Date.now();
-  for (const r of all) if (now - r.date > YEAR) await DB.del(r.id);
-  S.history = all.filter(r => now - r.date <= YEAR).sort((a, b) => b.date - a.date);
-}
+function rnd(n) { const a = new Uint8Array(n); crypto.getRandomValues(a); return [...a].map(x => x.toString(16).padStart(2, "0")).join(""); }
+function uuid() { return crypto.randomUUID ? crypto.randomUUID() : `${rnd(4)}-${rnd(2)}-4${rnd(2).slice(1)}-a${rnd(2).slice(1)}-${rnd(6)}`; }
 
-/* ---------- coiffeur name ---------- */
-function renderMe() { $("meName").textContent = S.me || "?"; $("nameCard").hidden = !!S.me; $("meInput").value = S.me; }
-$("nameCard").onsubmit = (e) => { e.preventDefault(); const v = $("meInput").value.trim(); if (!v) return; S.me = v; store.set("brute-me", v); renderMe(); renderHome(); };
-$("meBtn").onclick = () => { $("nameCard").hidden = false; $("meInput").focus(); };
+/* ---------- accounts ---------- */
+const slug = (n) => n.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const emailFor = (n) => `${slug(n)}@brute-studio.app`;
+let authMode = "login";
+function setAuthMode(m) {
+  authMode = m;
+  $("authTitle").textContent = m === "login" ? "Connexion" : m === "signup" ? "Nouveau coiffeur" : "Compte gérant";
+  $("authBtn").textContent = m === "login" ? "Se connecter" : "Créer le compte";
+  $("aCodeF").hidden = m === "login";
+  $("aCodeL").textContent = m === "gerant" ? "Code gérant" : "Code du salon";
+  $("aCode").placeholder = m === "gerant" ? "Code gérant" : "Donné par le gérant";
+  $("aPass").autocomplete = m === "login" ? "current-password" : "new-password";
+  $("modeLogin").hidden = m === "login"; $("modeSignup").hidden = m === "signup"; $("modeGerant").hidden = m === "gerant";
+  $("authErr").hidden = true;
+}
+$("modeLogin").onclick = () => setAuthMode("login");
+$("modeSignup").onclick = () => setAuthMode("signup");
+$("modeGerant").onclick = () => setAuthMode("gerant");
+function authError(t) { $("authErr").hidden = false; $("authErr").textContent = t; }
+$("authForm").onsubmit = async (e) => {
+  e.preventDefault();
+  if (!sb) { authError("Connexion au serveur impossible. Vérifie ta connexion internet puis recharge."); return; }
+  const name = $("aUser").value.trim(), pass = $("aPass").value, code = $("aCode").value.trim().toUpperCase();
+  if (!slug(name)) { authError("Indique ton nom."); return; }
+  if (pass.length < 6) { authError("Le mot de passe doit faire au moins 6 caractères."); return; }
+  if (authMode !== "login" && !code) { authError(authMode === "gerant" ? "Indique le code gérant." : "Indique le code du salon."); return; }
+  const btn = $("authBtn"); btn.disabled = true; $("authErr").hidden = true;
+  try {
+    if (authMode === "login") {
+      const { error } = await sb.auth.signInWithPassword({ email: emailFor(name), password: pass });
+      if (error) throw error;
+    } else {
+      const data = { username: slug(name), display_name: name };
+      if (authMode === "gerant") data.gerant_code = code; else data.salon_code = code;
+      const { data: res, error } = await sb.auth.signUp({ email: emailFor(name), password: pass, options: { data } });
+      if (error) throw error;
+      if (!res.session) { authError("Compte créé, mais la confirmation par e-mail est encore activée dans Supabase. Désactive-la, puis connecte-toi."); return; }
+    }
+    $("aPass").value = ""; $("aCode").value = "";
+  } catch (err) {
+    const m = (err && err.message || "").toLowerCase();
+    if (m.includes("invalid login")) authError("Nom ou mot de passe incorrect.");
+    else if (m.includes("already registered") || m.includes("already exists")) authError("Ce nom est déjà pris. Ajoute une initiale, par exemple « Tom B ».");
+    else if (m.includes("database error")) authError(authMode === "gerant" ? "Code gérant incorrect." : "Code du salon incorrect.");
+    else if (m.includes("email not confirmed")) authError("La confirmation par e-mail est activée dans Supabase. Désactive-la, puis reconnecte-toi.");
+    else if (m.includes("fetch") || m.includes("network")) authError("Pas de connexion internet. Réessaie.");
+    else authError("Connexion impossible : " + (err && err.message || "erreur inconnue"));
+  } finally { btn.disabled = false; }
+};
+async function loadProfile(session) {
+  S.uid = session.user.id;
+  const { data, error } = await sb.from("profiles").select("display_name, role").eq("id", S.uid).maybeSingle();
+  if (error || !data) { S.me = session.user.user_metadata?.display_name || "Coiffeur"; S.role = "coiffeur"; }
+  else { S.me = data.display_name; S.role = data.role; }
+  $("roleG").hidden = S.role !== "gerant";
+}
+let booted = false;
+async function onSession(session) {
+  if (!session) { S.uid = null; booted = false; setAuthMode("login"); show("auth"); return; }
+  if (booted && S.uid === session.user.id) return;
+  booted = true;
+  await loadProfile(session);
+  setView("coiffeur");
+  syncPending();
+}
+$("meBtn").onclick = async () => {
+  const sub = $("meSub");
+  if (!sub.dataset.armed) { sub.dataset.armed = "1"; sub.textContent = "toucher pour confirmer"; setTimeout(() => { sub.dataset.armed = ""; sub.textContent = "se déconnecter"; }, 4000); return; }
+  sub.dataset.armed = ""; sub.textContent = "se déconnecter";
+  await sb.auth.signOut();
+};
 
 /* ---------- step 1: client ---------- */
 $("startBtn").onclick = () => {
-  if (!S.me) { $("nameCard").hidden = false; $("meInput").focus(); toast("Indique d'abord ton prénom de coiffeur."); return; }
-  S.client = {}; S.avant = S.apres = null; S.recId = "tx-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  S.client = {}; S.avant = S.apres = null; S.recId = "tx-" + Date.now().toString(36) + rnd(3);
   for (const id of ["cPrenom", "cTel", "cMail"]) $(id).value = "";
   $("okPhoto").checked = false; $("okPub").checked = false; validClient();
   show("client");
@@ -812,39 +898,93 @@ document.querySelectorAll("#fmtChips .chip").forEach(b => b.onclick = () => { S.
 $("grainSw").onclick = () => { S.grain = !S.grain; $("grainSw").setAttribute("aria-checked", S.grain); refreshCompose(); };
 $("composeBack").onclick = () => openShoot("apres");
 
+/* ---------- upload ---------- */
+async function upload(rec) {
+  if (!sb || !S.uid || rec.owner !== S.uid) return false;
+  const base = `${S.uid}/${rec.key}`;
+  let r = await sb.storage.from("visuels").upload(base + ".jpg", rec.jpg, { contentType: "image/jpeg", upsert: true });
+  if (r.error) throw r.error;
+  r = await sb.storage.from("visuels").upload(base + "-mini.jpg", rec.thumb, { contentType: "image/jpeg", upsert: true });
+  if (r.error) throw r.error;
+  r = await sb.from("transformations").upsert({
+    id: rec.uuid, coiffeur_id: S.uid, coiffeur_name: rec.coiffeur,
+    client_prenom: rec.prenom, client_tel: rec.tel || null, client_mail: rec.mail || null,
+    consent_photo: true, consent_pub: !!rec.pub, format: rec.fmt, template: rec.tpl,
+    image_path: base + ".jpg", thumb_path: base + "-mini.jpg",
+    created_at: new Date(rec.date).toISOString(), expires_at: new Date(rec.date + YEAR).toISOString(),
+  });
+  if (r.error) throw r.error;
+  await DB.del(rec.id);
+  return true;
+}
+let syncing = false;
+async function syncPending() {
+  if (syncing || !S.uid) return; syncing = true;
+  let done = 0;
+  try {
+    for (const rec of await DB.all()) {
+      if (rec.v !== 2 || rec.owner !== S.uid) continue;
+      try { if (await upload(rec)) done++; } catch { break; }
+    }
+  } finally { syncing = false; }
+  if (done) { toast(`${done} visuel${done > 1 ? "s" : ""} sauvegardé${done > 1 ? "s" : ""}.`); S.view === "gerant" ? renderManager() : renderHome(); }
+}
+window.addEventListener("online", syncPending);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) syncPending(); });
+
 /* ---------- step 5: send ---------- */
 let current = null;
 const digits = (t) => (t || "").replace(/[^\d+]/g, "");
-function defaultMsg(p) { return `Salut ${p} ! Voici ton avant/après chez BRUTE. Merci pour ta confiance, à très vite.\nBRUTE · coiffure masculine`; }
+const linkFor = (rec) => `${APP_URL}v.html#${rec.owner}/${rec.key}`;
+function defaultMsg(rec, withLink) {
+  return withLink
+    ? `Salut ${rec.prenom} ! Voici ton avant/après chez BRUTE : ${linkFor(rec)}\nMerci pour ta confiance, à très vite.\nBRUTE · coiffure masculine`
+    : `Salut ${rec.prenom} ! Voici ton avant/après chez BRUTE. Merci pour ta confiance, à très vite.\nBRUTE · coiffure masculine`;
+}
 function refreshLinks() {
   const msg = $("msgText").value, c = current;
-  $("smsLink").href = `sms:${digits(c.tel)}&body=${encodeURIComponent(msg)}`;
+  $("smsMain").href = `sms:${digits(c.tel)}&body=${encodeURIComponent(msg)}`;
   $("mailLink").href = `mailto:${c.mail}?subject=${encodeURIComponent("Ton avant/après BRUTE")}&body=${encodeURIComponent(msg)}`;
 }
 $("msgText").oninput = refreshLinks;
+function setSendState(saved) {
+  const c = current;
+  $("syncState").textContent = saved ? "Sauvegardé en ligne. Le lien vers l'image est dans le message." : "Pas encore sauvegardé (connexion). Il partira tout seul dès que possible.";
+  $("smsMain").textContent = saved ? "Envoyer par SMS (texte + lien)" : "Ouvrir Messages (texte seul)";
+  $("smsMain").hidden = !c.tel;
+  $("sendNote").textContent = saved
+    ? "Le client reçoit le message avec un lien vers son visuel. Pour joindre aussi l'image, utilise « Partager l'image »."
+    : "Sans connexion, le message n'a pas de lien : utilise « Partager l'image » pour envoyer la photo.";
+}
 $("toSend").onclick = async () => {
   const btn = $("toSend"); btn.disabled = true; btn.textContent = "Préparation…";
+  let saved = false;
   try {
+    const A = gradedFrame(S.avant), B = gradedFrame(S.apres);
     const cv = document.createElement("canvas");
-    compose(cv, S.fmt, S.tpl, gradedFrame(S.avant), gradedFrame(S.apres), { grain: S.grain });
+    compose(cv, S.fmt, S.tpl, A, B, { grain: S.grain });
     const png = await toBlob(cv, "image/png");
+    const jpg = await toBlob(cv, "image/jpeg", .9);
     const tc = document.createElement("canvas");
-    compose(tc, "1x1", S.tpl, gradedFrame(S.avant), gradedFrame(S.apres), { grain: false, scale: .4 });
+    compose(tc, "1x1", S.tpl, A, B, { grain: false, scale: .4 });
     const thumb = await toBlob(tc, "image/jpeg", .85);
-    dropUrls(S.recId);
-    current = { id: S.recId, ...S.client, coiffeur: S.me, date: Date.now(), fmt: S.fmt, tpl: S.tpl, png, thumb };
+    const prev = current && current.id === S.recId ? current : null;
+    current = { v: 2, id: S.recId, uuid: prev ? prev.uuid : uuid(), key: prev ? prev.key : rnd(12), owner: S.uid,
+      ...S.client, coiffeur: S.me, date: prev ? prev.date : Date.now(), fmt: S.fmt, tpl: S.tpl, png, jpg, thumb };
+    urls.delete(current.id);
     await DB.put(current);
-    await loadHistory();
+    btn.textContent = "Sauvegarde…";
+    try { saved = await upload(current); } catch { saved = false; }
   } finally { btn.disabled = false; btn.textContent = "Envoyer"; }
   const c = current;
   $("sendTitle").textContent = `Pour ${c.prenom}`;
-  $("finalImg").src = urlFor(c, "png");
-  $("msgText").value = defaultMsg(c.prenom);
+  $("finalImg").src = blobUrl(c.id + "-png", c.png);
+  $("msgText").value = defaultMsg(c, saved);
   $("smsTo").textContent = c.tel || "pas de numéro";
-  $("copyTel").hidden = !c.tel; $("smsLink").hidden = !c.tel;
+  $("copyTel").hidden = !c.tel;
   $("mailOpt").hidden = !c.mail; $("mailTo").textContent = c.mail;
   for (const id of ["pngMsg", "copyInfo", "shareMsg"]) $(id).hidden = true;
-  refreshLinks();
+  setSendState(saved); refreshLinks();
   show("send");
 };
 async function copyText(text, label) {
@@ -862,48 +1002,72 @@ async function copyText(text, label) {
 $("copyMsg").onclick = () => copyText($("msgText").value, "Message");
 $("copyTel").onclick = () => copyText(current.tel, "Numéro");
 $("copyMail").onclick = () => copyText(current.mail, "Adresse");
-function fileFor(rec) {
-  const name = `BRUTE-${(rec.prenom || "client").normalize("NFD").replace(/[^\w-]/g, "")}-${new Date(rec.date).toISOString().slice(0, 10)}.png`;
-  return new File([rec.png], name, { type: "image/png" });
+function fileFrom(blob, prenom, date) {
+  const ext = blob.type === "image/png" ? "png" : "jpg";
+  const name = `BRUTE-${(prenom || "client").normalize("NFD").replace(/[^\w-]/g, "")}-${new Date(date).toISOString().slice(0, 10)}.${ext}`;
+  return new File([blob], name, { type: blob.type || "image/jpeg" });
 }
 function canShareFile(f) { try { return !!(navigator.canShare && navigator.canShare({ files: [f] })); } catch { return false; } }
-function downloadFallback(rec, f) {
-  const a = document.createElement("a"); a.href = urlFor(rec, "png"); a.download = f.name;
-  document.body.appendChild(a); a.click(); a.remove();
-}
-async function shareVisual(rec, text, msgEl) {
-  const f = fileFor(rec), say = (t) => { if (msgEl) { msgEl.hidden = false; msgEl.textContent = t; } };
+async function shareBlob(blob, prenom, date, text, msgEl) {
+  const f = fileFrom(blob, prenom, date), say = (t) => { if (msgEl) { msgEl.hidden = false; msgEl.textContent = t; } };
   // iOS drops the image in Messages when text and file are shared together: share the image alone, copy the text.
   if (text && navigator.clipboard) navigator.clipboard.writeText(text).then(() => toast("Message copié : colle-le dans la conversation."), () => {});
   if (canShareFile(f)) {
     try { await navigator.share({ files: [f] }); say(text ? "Image partagée. Le message est copié, colle-le si besoin." : "Partagé."); }
     catch (e) { if (!e || e.name !== "AbortError") say("Le partage n'a pas marché. Appuie longuement sur l'image pour l'enregistrer."); }
-  } else { downloadFallback(rec, f); say("Image téléchargée. Si rien ne s'ouvre, appuie longuement sur l'image."); }
+  } else {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = f.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    say("Image téléchargée. Si rien ne s'ouvre, appuie longuement sur l'image.");
+  }
 }
-async function saveVisual(rec, msgEl) { return shareVisual(rec, "", msgEl); }
-$("shareBtn").onclick = () => shareVisual(current, $("msgText").value, $("shareMsg"));
-$("pngBtn").onclick = () => saveVisual(current, $("pngMsg"));
+$("shareBtn").onclick = () => shareBlob(current.png, current.prenom, current.date, $("msgText").value, $("shareMsg"));
+$("pngBtn").onclick = () => shareBlob(current.png, current.prenom, current.date, "", $("pngMsg"));
 $("sendBack").onclick = () => show("compose");
-$("finishBtn").onclick = () => {
-  toast(`Transformation de ${current.prenom} enregistrée.`);
-  renderHome(); show("home");
-};
+$("finishBtn").onclick = () => { toast(`Transformation de ${current.prenom} enregistrée.`); setView("coiffeur"); };
 
-/* ---------- history, home & manager ---------- */
+/* ---------- lists: home (mine) & manager (all) ---------- */
 const fmtDate = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
-const expiry = (t) => new Date(t + YEAR).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
-function pillFor(h) { const p = document.createElement("span"); p.className = "pill " + (h.pub ? "pub" : "priv"); p.textContent = h.pub ? "Publiable" : "Privé"; return p; }
-function renderHome() {
-  renderMe();
-  const mine = S.history.filter(h => h.coiffeur === S.me), week = Date.now() - 7 * 864e5;
+const fmtExp = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+function fromRow(r) {
+  return { kind: "remote", id: r.id, prenom: r.client_prenom, tel: r.client_tel, mail: r.client_mail, pub: r.consent_pub, coiffeur: r.coiffeur_name,
+    coiffeurId: r.coiffeur_id, date: Date.parse(r.created_at), exp: Date.parse(r.expires_at), tpl: r.template,
+    img: publicUrl(r.image_path), thumb: publicUrl(r.thumb_path), paths: [r.image_path, r.thumb_path] };
+}
+function fromLocal(rec) {
+  return { kind: "local", id: rec.id, rec, prenom: rec.prenom, tel: rec.tel, mail: rec.mail, pub: rec.pub, coiffeur: rec.coiffeur, coiffeurId: rec.owner,
+    date: rec.date, exp: rec.date + YEAR, tpl: rec.tpl, img: blobUrl(rec.id + "-png", rec.png), thumb: blobUrl(rec.id + "-th", rec.thumb) };
+}
+async function fetchItems(all) {
+  const out = [];
+  for (const rec of await DB.all()) if (rec.v === 2 && rec.owner === S.uid) out.push(fromLocal(rec));
+  if (sb && S.uid) {
+    let q = sb.from("transformations").select("*").order("created_at", { ascending: false }).limit(1000);
+    if (!all) q = q.eq("coiffeur_id", S.uid);
+    const { data, error } = await q;
+    if (error) throw error;
+    for (const r of data || []) out.push(fromRow(r));
+  }
+  return out.sort((a, b) => b.date - a.date);
+}
+function pillFor(h) {
+  const p = document.createElement("span");
+  if (h.kind === "local") { p.className = "pill priv"; p.textContent = "À sauvegarder"; return p; }
+  p.className = "pill " + (h.pub ? "pub" : "priv"); p.textContent = h.pub ? "Publiable" : "Privé"; return p;
+}
+async function renderHome() {
+  $("meName").textContent = S.me || "?";
+  $("today").textContent = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  let mine = [];
+  try { mine = await fetchItems(false); } catch { toast("Impossible de charger l'historique (connexion)."); }
+  const week = Date.now() - 7 * 864e5;
   $("weekCount").textContent = mine.filter(h => h.date >= week).length;
   $("hPub").textContent = mine.filter(h => h.pub).length; $("hPriv").textContent = mine.filter(h => !h.pub).length;
-  $("today").textContent = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
   const box = $("homeList"); box.innerHTML = "";
   $("homeEmpty").hidden = mine.length > 0;
-  for (const h of mine.slice(0, 6)) {
+  for (const h of mine.slice(0, 8)) {
     const row = document.createElement("div"); row.className = "item"; row.tabIndex = 0; row.setAttribute("role", "button");
-    const img = document.createElement("img"); img.src = urlFor(h, "thumb"); img.alt = "";
+    const img = document.createElement("img"); img.src = h.thumb; img.alt = ""; img.loading = "lazy";
     const info = document.createElement("div"); const b = document.createElement("b"); b.textContent = h.prenom;
     const sm = document.createElement("small"); sm.textContent = `${fmtDate(h.date)} · ${h.tel || h.mail || "sans contact"}`;
     info.append(b, sm);
@@ -912,49 +1076,77 @@ function renderHome() {
     box.appendChild(row);
   }
 }
-let teamFilter = "Tous";
-function renderManager() {
-  const team = [...new Set(S.history.map(h => h.coiffeur))];
+let teamFilter = "Tous", allItems = [];
+async function purgeExpired(items) {
+  const now = Date.now(), old = items.filter(h => h.kind === "remote" && h.exp < now);
+  for (const h of old) await removeItem(h).catch(() => {});
+  return items.filter(h => !(h.kind === "remote" && h.exp < now));
+}
+async function renderManager(refetch = true) {
+  if (refetch) {
+    try { allItems = await purgeExpired(await fetchItems(true)); } catch { toast("Impossible de charger les transformations (connexion)."); }
+  }
+  const team = [...new Set(allItems.map(h => h.coiffeur))].sort((a, b) => a.localeCompare(b, "fr"));
   if (teamFilter !== "Tous" && !team.includes(teamFilter)) teamFilter = "Tous";
-  const list = S.history.filter(h => teamFilter === "Tous" || h.coiffeur === teamFilter);
+  const list = allItems.filter(h => teamFilter === "Tous" || h.coiffeur === teamFilter);
   $("kTotal").textContent = list.length; $("kPub").textContent = list.filter(h => h.pub).length; $("kTeam").textContent = team.length;
   const chips = $("teamChips"); chips.innerHTML = "";
   for (const n of ["Tous", ...team]) {
     const c = document.createElement("button"); c.className = "chip"; c.textContent = n; c.setAttribute("aria-pressed", n === teamFilter);
-    c.onclick = () => { teamFilter = n; renderManager(); }; chips.appendChild(c);
+    c.onclick = () => { teamFilter = n; renderManager(false); }; chips.appendChild(c);
   }
   const g = $("gallery"); g.innerHTML = ""; $("galEmpty").hidden = list.length > 0;
   for (const h of list) {
     const card = document.createElement("button"); card.className = "card";
-    const img = document.createElement("img"); img.src = urlFor(h, "thumb"); img.alt = `Avant/après de ${h.prenom}`;
+    const img = document.createElement("img"); img.src = h.thumb; img.alt = `Avant/après de ${h.prenom}`; img.loading = "lazy";
     const meta = document.createElement("div"); meta.className = "meta";
     const b = document.createElement("b"); b.textContent = h.prenom; meta.append(b, pillFor(h));
-    const sm = document.createElement("small"); sm.textContent = `${h.coiffeur} · ${fmtDate(h.date)}`;
-    const ex = document.createElement("small"); ex.textContent = `Supprimé le ${expiry(h.date)}`;
+    const sm = document.createElement("small"); sm.textContent = `${h.coiffeur} · ${fmtDate(h.date)}${h.tel ? " · " + h.tel : ""}`;
+    const ex = document.createElement("small"); ex.textContent = `Supprimé le ${fmtExp(h.exp)}`;
     card.append(img, meta, sm, ex); card.onclick = () => openSheet(h);
     g.appendChild(card);
   }
 }
-let sheetRec = null;
+async function removeItem(h) {
+  if (h.kind === "local") { await DB.del(h.id); return; }
+  const r1 = await sb.storage.from("visuels").remove(h.paths);
+  if (r1.error) throw r1.error;
+  const r2 = await sb.from("transformations").delete().eq("id", h.id);
+  if (r2.error) throw r2.error;
+}
+let sheetItem = null, sheetBlob = null;
 function openSheet(h) {
-  sheetRec = h;
-  $("sheetImg").src = urlFor(h, "png");
+  sheetItem = h; sheetBlob = h.kind === "local" ? h.rec.png : null;
+  if (!sheetBlob) fetch(h.img).then(r => r.ok ? r.blob() : null).then(b => { if (sheetItem === h) sheetBlob = b; }).catch(() => {});
+  $("sheetImg").src = h.img;
   $("sheetTxt").textContent = `${h.prenom} · par ${h.coiffeur} · ${fmtDate(h.date)} · ${h.pub ? "publication autorisée" : "ne pas publier"}${h.tel ? " · " + h.tel : ""}`;
   $("sheetDel").textContent = "Supprimer"; $("sheetDel").dataset.armed = "";
+  $("sheetDel").hidden = !(h.coiffeurId === S.uid || S.role === "gerant");
   $("sheet").hidden = false;
 }
-$("sheetSave").onclick = () => sheetRec && saveVisual(sheetRec, null);
+$("sheetSave").onclick = () => {
+  if (!sheetItem) return;
+  if (!sheetBlob) { toast("L'image se charge, réessaie dans une seconde."); return; }
+  shareBlob(sheetBlob, sheetItem.prenom, sheetItem.date, "", null);
+};
 $("sheetDel").onclick = async () => {
   const b = $("sheetDel");
   if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Confirmer la suppression"; return; }
-  await DB.del(sheetRec.id); dropUrls(sheetRec.id); await loadHistory();
+  try { await removeItem(sheetItem); } catch { toast("Suppression impossible (connexion). Réessaie."); return; }
   $("sheet").hidden = true; toast("Transformation supprimée.");
-  S.role === "gerant" ? renderManager() : renderHome();
+  S.view === "gerant" ? renderManager() : renderHome();
 };
 $("sheetClose").onclick = () => $("sheet").hidden = true;
 $("sheet").onclick = (e) => { if (e.target.id === "sheet") $("sheet").hidden = true; };
 
-ready.then(loadHistory).then(() => { renderHome(); });
+/* ---------- boot ---------- */
+setAuthMode("login");
+ready.then(async () => {
+  if (!sb) { show("auth"); authError("Le serveur ne répond pas. Vérifie ta connexion puis recharge l'appli."); return; }
+  sb.auth.onAuthStateChange((_evt, session) => { setTimeout(() => onSession(session), 0); });
+  const { data } = await sb.auth.getSession();
+  onSession(data.session);
+});
 })();
 </script>
 </body>
