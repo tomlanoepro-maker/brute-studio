@@ -115,3 +115,11 @@ create policy "visuels modifier" on storage.objects
 create policy "visuels supprimer" on storage.objects
   for delete to authenticated
   using (bucket_id = 'visuels' and ((storage.foldername(name))[1] = auth.uid()::text or public.is_gerant()));
+
+-- Droits d'accès à l'API pour les comptes connectés
+-- (les nouveaux projets Supabase ne les donnent plus par défaut).
+grant usage on schema public to authenticated;
+grant select on public.profiles to authenticated;
+grant select, insert, update, delete on public.transformations to authenticated;
+grant execute on function public.is_gerant() to authenticated;
+revoke all on public.private_settings from anon, authenticated;
