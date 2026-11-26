@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BRUTE Studio</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="BRUTE">
+<meta name="theme-color" content="#F5F1EB">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="img/icon-180.png">
+<link rel="icon" type="image/png" href="img/icon-192.png">
+
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+/* Layout: one iPhone-width column, Apple-like calm. Pale warm ground that melts into the BRUTE orange gradient at the bottom, frosted glass cards, pill controls, thin Monoglyphic for type, Merta reserved for the visuals. */
+@font-face{font-family:"Merta";src:url("fonts/MertaSans-Black.ttf") format("truetype");font-weight:900;font-display:block}
+@font-face{font-family:"Merta";src:url("fonts/MertaSans-ExtraBold.ttf") format("truetype");font-weight:800;font-display:block}
+@font-face{font-family:"Mono";src:url("fonts/Monoglyphic-Light.otf") format("opentype");font-weight:300;font-display:swap}
+@font-face{font-family:"Mono";src:url("fonts/Monoglyphic-Medium.otf") format("opentype");font-weight:500;font-display:swap}
+@font-face{font-family:"Mono";src:url("fonts/Monoglyphic-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+:root{
+  --papaye:#E73F12; --rouge:#E22923; --black:#0B0605; --creme:#FFF6EC; --off:#DDDBCE;
+  --ground:#F5F1EB;
+  --glass:rgba(255,252,248,.62); --glass-line:rgba(255,255,255,.75);
+  --line:rgba(11,6,5,.10); --soft:rgba(11,6,5,.55);
+  --cta:linear-gradient(160deg,#F2803F 0%,#E73F12 55%,#D52A18 100%);
+  --display:"Merta","Arial Black","Helvetica Neue",sans-serif;
+  --text:"Mono","Inter","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--ground);color:var(--black);font-family:var(--text);font-weight:300;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* the orange horizon + grain */
+.horizon{position:fixed;inset:auto 0 0 0;height:62vh;z-index:-1;pointer-events:none;
+  background:radial-gradient(120% 85% at 50% 118%,#C42114 0%,#E73F12 28%,#F07A3A 46%,#F6C79A 62%,rgba(245,241,235,0) 80%)}
+.horizon::after{content:"";position:absolute;inset:0;opacity:.35;mix-blend-mode:overlay;-webkit-mask-image:linear-gradient(to top,#000 25%,transparent 75%);mask-image:linear-gradient(to top,#000 25%,transparent 75%);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input{font:inherit;color:inherit}
+.app{max-width:440px;margin:0 auto;padding-block:8px 48px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--text);font-weight:300;line-height:1.02;margin:0;letter-spacing:-.025em;text-wrap:balance}
+h2{font-size:34px} h3{font-size:18px;font-weight:500;letter-spacing:-.01em}
+p{margin:0}
+.muted{color:var(--soft)}
+.eyebrow{font-weight:500;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.glass{background:var(--glass);border:1px solid var(--glass-line);border-radius:26px;-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 10px 30px rgba(120,50,20,.06)}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:env(safe-area-inset-top,0px);padding:8px 8px 8px 16px;z-index:5;margin-top:6px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ground)}
+.top img{height:17px;width:auto;display:block}
+.seg{display:flex;gap:2px;padding:3px;border-radius:999px;background:rgba(11,6,5,.06)}
+.seg button{border:0;background:transparent;padding:7px 13px;font-weight:500;font-size:13px;cursor:pointer;border-radius:999px;color:var(--soft)}
+.seg button[aria-pressed="true"]{background:var(--black);color:var(--creme)}
+
+/* buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;background:var(--cta);color:var(--creme);font-family:var(--text);font-weight:500;font-size:16px;padding:16px 20px;cursor:pointer;border-radius:999px;box-shadow:0 8px 22px rgba(231,63,18,.28),0 1px 0 rgba(255,255,255,.35) inset}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn.dark{background:var(--black);box-shadow:none}
+.btn.ghost{background:rgba(255,252,248,.7);color:var(--black);box-shadow:0 0 0 1px var(--line) inset}
+.btn.small{font-size:14px;padding:11px 16px;width:auto;align-self:flex-start}
+.row{display:flex;gap:10px}
+.row>*{flex:1;min-width:0}
+:focus-visible{outline:3px solid var(--papaye);outline-offset:3px}
+
+/* home */
+.homehead{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;padding-top:18px}
+.homehead .place{font-size:26px;letter-spacing:-.02em}
+.big{display:flex;flex-direction:column;align-items:center;gap:2px;padding-block:6px 4px}
+.big b{font-weight:300;font-size:108px;line-height:.95;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);padding:16px 8px;text-align:center}
+.stats div{display:flex;flex-direction:column;gap:2px}
+.stats b{font-weight:300;font-size:24px;font-variant-numeric:tabular-nums}
+.stats small{font-size:12px;color:var(--soft)}
+.orbwrap{display:flex;flex-direction:column;align-items:center;gap:10px;padding-block:10px}
+.orb{width:92px;height:92px;border-radius:50%;border:0;cursor:pointer;background:var(--cta);color:var(--creme);display:grid;place-items:center;box-shadow:0 14px 34px rgba(196,33,20,.38),0 0 0 8px rgba(255,246,236,.28),0 1px 0 rgba(255,255,255,.4) inset}
+.orb svg{width:34px;height:34px}
+.orbwrap span{font-weight:500;color:var(--black)}
+.listcard{padding:6px 16px}
+.list{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.item canvas{width:52px;height:52px;display:block;background:var(--black);border-radius:14px}
+.item b{font-weight:500;display:block}
+.item small{color:var(--soft);font-size:12.5px}
+.pill{font-size:11.5px;font-weight:500;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.pill.pub{background:rgba(231,63,18,.12);color:#B8300C}
+.pill.priv{background:rgba(11,6,5,.07);color:var(--soft)}
+.pill.ex{background:rgba(11,6,5,.07);color:var(--soft)}
+
+/* stepper */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.steps span{height:4px;border-radius:4px;background:rgba(11,6,5,.1)}
+.steps span.on{background:var(--papaye)}
+.stephead{display:flex;flex-direction:column;gap:8px}
+
+/* form */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:500;font-size:13px;color:var(--soft);padding-left:4px}
+.field input{border:1px solid var(--glass-line);background:var(--glass);padding:14px 16px;font-size:16px;border-radius:16px;-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.check{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:14px 16px;cursor:pointer}
+.check input{width:22px;height:22px;accent-color:var(--papaye);margin:1px 0 0}
+.check b{font-weight:500}
+.note{font-size:13px;color:var(--soft);padding-inline:4px}
+
+/* camera / alignment */
+.shoot{background:#141110;color:var(--creme);padding:12px;display:flex;flex-direction:column;gap:12px;border-radius:30px;box-shadow:0 20px 40px rgba(11,6,5,.25)}
+.frame{position:relative;width:100%;aspect-ratio:3/4;max-width:100%;background:#2a2522;overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;border-radius:22px}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.frame .ghost{opacity:.42;pointer-events:none}
+.frame svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.frame .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:24px;color:rgba(255,246,236,.7);font-size:14px}
+.frame .empty b{font-weight:300;font-size:26px;color:var(--creme);letter-spacing:-.02em}
+.shoot .tools{display:flex;gap:12px;align-items:center;padding-inline:6px}
+.shoot .tools label{font-size:12px;font-weight:500;color:rgba(255,246,236,.6)}
+.shoot input[type=range]{flex:1;accent-color:var(--papaye)}
+.shoot .btn.ghost{background:rgba(255,246,236,.1);color:var(--creme);box-shadow:0 0 0 1px rgba(255,246,236,.18) inset}
+.hint{font-size:13px;color:rgba(255,246,236,.62);padding-inline:6px}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
+
+/* composer */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:rgba(255,252,248,.7);box-shadow:0 0 0 1px var(--line) inset;padding:9px 14px;font-weight:500;font-size:14px;cursor:pointer;border-radius:999px}
+.chip[aria-pressed="true"]{background:var(--black);color:var(--creme);box-shadow:none}
+.preview{background:#141110;display:flex;justify-content:center;padding:16px;border-radius:30px}
+.preview canvas{max-width:100%;max-height:60vh;width:auto;height:auto;display:block;border-radius:14px;box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.tpls{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.tpl{border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:500;text-align:center;color:var(--soft)}
+.tpl canvas{width:100%;aspect-ratio:9/16;display:block;background:var(--black);border-radius:12px;transition:transform .15s}
+.tpl[aria-pressed="true"]{color:var(--black)}
+.tpl[aria-pressed="true"] canvas{box-shadow:0 0 0 2.5px var(--ground),0 0 0 5px var(--papaye)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.switch{width:51px;height:31px;border:0;background:rgba(11,6,5,.14);position:relative;cursor:pointer;padding:0;border-radius:999px;transition:background .2s;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;background:#fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:left .2s}
+.switch[aria-checked="true"]{background:var(--papaye)}
+.switch[aria-checked="true"]::after{left:22px}
+
+/* send */
+.sendgrid{display:flex;flex-direction:column;gap:12px}
+.opt{padding:16px;display:flex;flex-direction:column;gap:12px}
+.opt header{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.qrbox{display:grid;grid-template-columns:128px 1fr;gap:14px;align-items:center}
+.qrbox canvas{width:128px;height:128px;display:block;image-rendering:pixelated;border-radius:14px}
+.sms{background:rgba(11,6,5,.05);padding:12px;font-size:14px;display:flex;flex-direction:column;gap:6px;border-radius:18px}
+.sms .from{font-weight:700;font-size:13px}
+.sms .bubble{background:#fff;padding:10px 13px;border-radius:18px 18px 18px 5px;max-width:92%;color:#111}
+.sms .bubble u{color:var(--papaye);text-decoration:none;word-break:break-all}
+.sent{font-weight:500;color:#B8300C;font-size:13px}
+
+/* manager */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:16px 8px}
+.kpi b{font-weight:300;font-size:40px;display:block;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.kpi small{font-size:12px;color:var(--soft)}
+.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{display:flex;flex-direction:column;gap:4px;background:none;border:0;padding:0;text-align:left;cursor:pointer}
+.card canvas{width:100%;aspect-ratio:1;display:block;background:var(--black);border-radius:20px;margin-bottom:4px}
+.card .meta{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.card b{font-weight:500}
+.card small{font-size:12px;color:var(--soft)}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:rgba(11,6,5,.88);color:var(--creme);padding:12px 18px;font-size:14px;max-width:min(92vw,420px);z-index:20;border-radius:999px;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.sheet{position:fixed;inset:0;background:rgba(11,6,5,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(20px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet canvas{max-width:100%;max-height:72vh;display:block;border-radius:18px}
+.sheet p{color:var(--creme);text-align:center}
+.sheet .btn{align-self:center}
+.namecard{padding:16px;display:flex;flex-direction:column;gap:12px}
+.namecard input,.field textarea{border:1px solid var(--line);background:rgba(255,255,255,.8);padding:12px 14px;font-size:16px;border-radius:14px;min-width:0}
+.field textarea{resize:vertical;line-height:1.4;font:inherit;font-size:16px}
+.mebtn{border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;min-width:0}
+.mebtn b{font-weight:300;font-size:24px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mebtn small{font-size:12px;color:var(--soft)}
+.linkbtn{border:0;background:none;color:rgba(255,246,236,.55);font-size:13px;text-decoration:underline;cursor:pointer;padding:2px;align-self:center}
+.empty-list{font-size:14px;padding:6px 0 14px}
+.row.wrap{flex-wrap:wrap}
+.row.wrap>*{flex:0 1 auto}
+a.btn{text-decoration:none}
+.preview img{max-width:100%;max-height:60vh;display:block;border-radius:14px;box-shadow:0 14px 30px rgba(0,0,0,.4);-webkit-touch-callout:default}
+.item img{width:52px;height:52px;display:block;border-radius:14px;object-fit:cover;background:var(--black)}
+.item{cursor:pointer}
+.card img{width:100%;aspect-ratio:1;display:block;object-fit:cover;border-radius:20px;margin-bottom:4px;background:var(--black)}
+.sheet img{max-width:100%;max-height:68vh;display:block;border-radius:18px;-webkit-touch-callout:default}
+.sheet .btn.ghost{background:rgba(255,246,236,.12);color:var(--creme);box-shadow:0 0 0 1px rgba(255,246,236,.25) inset}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.frame video.mirror{transform:scaleX(-1)}
+.camctl{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:4px 2px}
+.camctl .btn.small{align-self:center;justify-self:start;width:auto}
+.camctl #flipBtn{justify-self:end}
+.shutter{width:76px;height:76px;border-radius:50%;border:4px solid var(--creme);background:var(--cta);cursor:pointer;box-shadow:0 0 0 4px rgba(255,246,236,.15),0 10px 24px rgba(231,63,18,.4)}
+.shutter:active{transform:scale(.94)}
+.editctl{display:flex;flex-direction:column;gap:12px}
+</style>
+</head>
+<body>
+
+<div class="horizon" aria-hidden="true"></div>
+<div class="app">
+  <div class="top glass">
+    <img src="img/logo-noir.webp" alt="BRUTE coiffure masculine">
+    <div class="seg" role="group" aria-label="Espace">
+      <button id="roleC" aria-pressed="true">Coiffeur</button>
+      <button id="roleG" aria-pressed="false">Gérant</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section id="s-home" class="stephead" style="gap:18px">
+    <div class="homehead">
+      <p class="place">Studio BRUTE</p>
+      <p class="muted" id="today"></p>
+    </div>
+    <div class="big"><b id="weekCount">0</b><span class="muted">transformations cette semaine</span></div>
+    <form class="glass namecard" id="nameCard" hidden>
+      <label for="meInput"><b style="font-weight:500">Ton prénom de coiffeur</b><br><span class="muted" style="font-size:13px">Il apparaît dans l'espace gérant.</span></label>
+      <div class="row"><input id="meInput" autocomplete="off" placeholder="Ex. Tom"><button class="btn small" type="submit">OK</button></div>
+    </form>
+    <div class="glass stats">
+      <div><b id="hPub">0</b><small>publiables</small></div>
+      <div><b id="hPriv">0</b><small>privées</small></div>
+      <button type="button" id="meBtn" class="mebtn"><b id="meName">?</b><small>coiffeur · modifier</small></button>
+    </div>
+    <div class="orbwrap">
+      <button class="orb" id="startBtn" aria-label="Nouvelle transformation"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <span>Nouvelle transformation</span>
+    </div>
+    <div class="glass listcard">
+      <div class="eyebrow" style="padding-top:12px">Tes dernières transformations</div>
+      <div class="list" id="homeList"></div>
+      <p class="muted empty-list" id="homeEmpty">Aucune transformation pour l'instant. Appuie sur + pour commencer.</p>
+    </div>
+  </section>
+
+  <!-- STEP 1 CLIENT -->
+  <section id="s-client" class="stephead" hidden style="gap:16px">
+    <div class="stephead"><div class="steps" data-step="1"></div><div class="eyebrow">Étape 1 sur 5</div><h2>Le client</h2></div>
+    <div class="field"><label for="cPrenom">Prénom du client</label><input id="cPrenom" autocomplete="off" autocapitalize="words" placeholder="Ex. Mathis"></div>
+    <div class="field"><label for="cTel">Téléphone (pour le SMS)</label><input id="cTel" type="tel" inputmode="tel" placeholder="06 12 34 56 78"></div>
+    <div class="field"><label for="cMail">E-mail (facultatif)</label><input id="cMail" type="email" inputmode="email" placeholder="mathis@exemple.fr"></div>
+    <label class="check glass" for="okPhoto"><input type="checkbox" id="okPhoto"><span><b>Le client accepte d'être photographié</b><br><span class="muted">et de recevoir son avant/après. Obligatoire.</span></span></label>
+    <label class="check glass" for="okPub"><input type="checkbox" id="okPub"><span><b>BRUTE peut publier le visuel</b><br><span class="muted">Instagram, site, vitrine. Facultatif.</span></span></label>
+    <p class="note">Photos gardées 1 an puis supprimées automatiquement. Le client peut demander leur suppression à tout moment.</p>
+    <div class="row"><button class="btn ghost" data-go="home">Annuler</button><button class="btn" id="toAvant" disabled>Photo avant</button></div>
+  </section>
+
+  <!-- STEP 2/3 SHOOT -->
+  <section id="s-shoot" class="stephead" hidden style="gap:14px">
+    <div class="stephead"><div class="steps" id="shootSteps"></div><div class="eyebrow" id="shootEyebrow"></div><h2 id="shootTitle"></h2></div>
+    <div class="shoot">
+      <div class="frame" id="frame" aria-label="Cadrage de la photo">
+        <video id="cam" playsinline muted autoplay></video>
+        <canvas id="frameCv" width="450" height="600" hidden></canvas>
+        <canvas id="ghostCv" class="ghost" width="450" height="600" hidden></canvas>
+        <svg viewBox="0 0 900 1200" aria-hidden="true">
+          <ellipse cx="450" cy="510" rx="190" ry="250" fill="none" stroke="#FFF6EC" stroke-width="4" stroke-dasharray="14 12" opacity=".85"/>
+          <line x1="0" y1="480" x2="900" y2="480" stroke="#E73F12" stroke-width="4"/>
+          <line x1="450" y1="0" x2="450" y2="1200" stroke="#FFF6EC" stroke-width="2" opacity=".35"/>
+          <circle cx="385" cy="480" r="16" fill="none" stroke="#E73F12" stroke-width="4"/>
+          <circle cx="515" cy="480" r="16" fill="none" stroke="#E73F12" stroke-width="4"/>
+          <text x="20" y="464" fill="#E73F12" font-family="Mono, sans-serif" font-weight="700" font-size="30">YEUX</text>
+        </svg>
+        <div class="empty" id="frameEmpty" hidden><b>Caméra indisponible</b><span id="camErr">Autorise l'appareil photo pour Safari (Réglages, Safari, Appareil photo), ou utilise la galerie.</span></div>
+      </div>
+      <p class="hint" id="shootHint"></p>
+      <div class="camctl" id="camCtl">
+        <div class="btn ghost small filebtn"><span>Galerie</span><input type="file" id="libIn" accept="image/*" aria-label="Choisir dans la galerie"></div>
+        <button class="shutter" id="shutter" aria-label="Prendre la photo"></button>
+        <button class="btn ghost small" id="flipBtn">Retourner</button>
+        <input type="file" id="fileIn" accept="image/*" capture="environment" hidden>
+      </div>
+      <div class="editctl" id="editCtl" hidden>
+        <div class="tools"><label for="zoom">Zoom</label><input type="range" id="zoom" min="0.6" max="2.6" step="0.01" value="1"></div>
+        <div class="row"><button class="btn ghost" id="retakeBtn">Reprendre</button></div>
+      </div>
+      <div class="row" style="justify-content:center"><button class="btn ghost small" id="ghostBtn" hidden aria-pressed="true" style="align-self:center">Avant visible</button></div>
+      <button class="linkbtn" id="demoBtn">Faire un essai avec une photo test</button>
+    </div>
+    <div class="row"><button class="btn ghost" id="shootBack">Retour</button><button class="btn" id="shootNext" disabled>Suivant</button></div>
+  </section>
+
+  <!-- STEP 4 COMPOSE -->
+  <section id="s-compose" class="stephead" hidden style="gap:16px">
+    <div class="stephead"><div class="steps" data-step="4"></div><div class="eyebrow">Étape 4 sur 5</div><h2>Le visuel</h2></div>
+    <div class="preview"><canvas id="outCv"></canvas></div>
+    <div class="stephead"><div class="eyebrow">Format</div>
+      <div class="chips" id="fmtChips">
+        <button class="chip" data-fmt="9x16" aria-pressed="true">9:16 Story</button>
+        <button class="chip" data-fmt="4x5" aria-pressed="false">4:5 Post</button>
+        <button class="chip" data-fmt="1x1" aria-pressed="false">1:1 Carré</button>
+      </div>
+    </div>
+    <div class="stephead"><div class="eyebrow">Modèle</div><div class="tpls" id="tpls"></div></div>
+    <div class="toggle glass"><span><b style="font-weight:500">Grain BRUTE</b><br><span class="muted" style="font-size:13px">Filtre appliqué automatiquement</span></span><button class="switch" id="grainSw" role="switch" aria-checked="true" aria-label="Grain BRUTE"></button></div>
+    <div class="row"><button class="btn ghost" id="composeBack">Retour</button><button class="btn" id="toSend">Envoyer</button></div>
+  </section>
+
+  <!-- STEP 5 SEND -->
+  <section id="s-send" class="stephead" hidden style="gap:16px">
+    <div class="stephead"><div class="steps" data-step="5"></div><div class="eyebrow">Étape 5 sur 5</div><h2 id="sendTitle">Pour le client</h2></div>
+    <div class="preview"><img id="finalImg" alt="Visuel avant/après final"></div>
+    <div class="sendgrid">
+      <div class="opt glass">
+        <div class="field"><label for="msgText">Message pour le client</label><textarea id="msgText" rows="4"></textarea></div>
+        <button class="btn" id="shareBtn">Envoyer le visuel</button>
+        <p class="note">Ouvre le partage de l'iPhone avec l'image et le message : Messages, WhatsApp, Mail, AirDrop ou « Enregistrer l'image ».</p>
+        <span class="sent" id="shareMsg" hidden></span>
+      </div>
+      <div class="opt glass">
+        <header><h3>SMS</h3><span class="muted" id="smsTo" style="font-size:14px;user-select:all;-webkit-user-select:all"></span></header>
+        <div class="row wrap">
+          <a class="btn small" id="smsLink" href="#">Ouvrir Messages</a>
+          <button class="btn small ghost" id="copyMsg">Copier le message</button>
+          <button class="btn small ghost" id="copyTel">Copier le numéro</button>
+        </div>
+        <span class="sent" id="copyInfo" hidden></span>
+        <p class="note">Ouvre Messages vers ce numéro avec le texte ; ajoute l'image depuis tes Photos. Pour l'instant le SMS part de ton numéro ; l'expéditeur « BRUTE » arrive avec la version finale.</p>
+      </div>
+      <div class="opt glass" id="mailOpt">
+        <header><h3>Mail</h3><span class="muted" id="mailTo" style="font-size:14px;user-select:all;-webkit-user-select:all"></span></header>
+        <div class="row wrap">
+          <a class="btn small" id="mailLink" href="#">Ouvrir Mail</a>
+          <button class="btn small ghost" id="copyMail">Copier l'adresse</button>
+        </div>
+      </div>
+      <div class="opt glass">
+        <header><h3>Enregistrer</h3></header>
+        <button class="btn small dark" id="pngBtn">Enregistrer dans Photos</button>
+        <span class="sent" id="pngMsg" hidden></span>
+      </div>
+    </div>
+    <div class="row"><button class="btn ghost" id="sendBack">Retour</button><button class="btn" id="finishBtn">Terminer</button></div>
+  </section>
+
+  <!-- MANAGER -->
+  <section id="s-manager" class="stephead" hidden style="gap:18px">
+    <div class="stephead"><div class="eyebrow">Espace gérant</div><h2>Toutes les transformations</h2></div>
+    <div class="kpis glass">
+      <div class="kpi"><b id="kTotal">0</b><small>visuels</small></div>
+      <div class="kpi"><b id="kPub">0</b><small>publiables</small></div>
+      <div class="kpi"><b id="kTeam">0</b><small>coiffeurs</small></div>
+    </div>
+    <div class="chips" id="teamChips"></div>
+    <div class="gallery" id="gallery"></div>
+    <p class="muted empty-list" id="galEmpty">Aucune transformation enregistrée.</p>
+    <p class="note">Version d'essai : les transformations sont gardées sur ce téléphone uniquement, et supprimées automatiquement après 1 an. Le partage entre tous les téléphones du salon arrive avec la version finale.</p>
+  </section>
+</div>
+
+<div class="toast" id="toast" hidden role="status"></div>
+<div class="sheet" id="sheet" hidden>
+  <img id="sheetImg" alt="Visuel avant/après">
+  <p id="sheetTxt"></p>
+  <div class="row wrap" style="justify-content:center">
+    <button class="btn small" id="sheetSave">Enregistrer</button>
+    <button class="btn small ghost" id="sheetDel">Supprimer</button>
+    <button class="btn small ghost" id="sheetClose">Fermer</button>
+  </div>
+</div>
+<script>
+(() => {
+const FW = 900, FH = 1200, EYE = 480; // canonical portrait frame, eye line
+const FORMATS = { "9x16": [1080, 1920], "4x5": [1080, 1350], "1x1": [1080, 1080] };
+const TEMPLATES = [
+  { id: "degrade", name: "Dégradé" },
+  { id: "motif", name: "Motif" },
+  { id: "plein", name: "Plein cadre" },
+  { id: "split", name: "Split" },
+];
+const C = { papaye: "#E73F12", off: "#DDDBCE", black: "#0B0605", creme: "#FFF6EC" };
+const $ = (id) => document.getElementById(id);
+
+const S = {
+  role: "coiffeur",
+  client: {}, avant: null, apres: null, which: "avant",
+  fmt: "9x16", tpl: "degrade", grain: true, ghost: true,
+  history: [],
+};
+
+/* ---------- assets ---------- */
+const IMG = {};
+function loadImg(src) { return new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }); }
+const ready = Promise.all([
+  loadImg("img/degrade-solaire.webp").then(i => IMG.solaire = i),
+  loadImg("img/degrade-orange.webp").then(i => IMG.orange = i),
+  loadImg("img/logo-creme.webp").then(i => IMG.logoCreme = i),
+  loadImg("img/logo-orange.webp").then(i => IMG.logoOrange = i),
+  loadImg("img/logo-noir.webp").then(i => IMG.logoNoir = i),
+  document.fonts ? Promise.all([
+    document.fonts.load('900 60px "Merta"'), document.fonts.load('800 60px "Merta"'),
+    document.fonts.load('500 20px "Mono"'), document.fonts.load('700 20px "Mono"'),
+  ]).catch(() => {}) : Promise.resolve(),
+]);
+
+/* ---------- random ---------- */
+function rng(seed) { let s = seed >>> 0 || 1; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
+
+/* ---------- demo portraits (stand-ins for real studio photos) ---------- */
+const SKIN = ["#d9a487", "#b9805f", "#8a5a3f"], HAIR = ["#2f2119", "#1a1412", "#5a3a24"];
+function demoPortrait(kind, v = 0) {
+  const cv = document.createElement("canvas"); cv.width = FW; cv.height = FH;
+  const g = cv.getContext("2d"), r = rng(7 + v * 13 + (kind === "apres" ? 101 : 0));
+  const skin = SKIN[v % 3], hair = HAIR[v % 3];
+  const bg = g.createRadialGradient(450, 480, 80, 450, 560, 900); bg.addColorStop(0, "#9a958d"); bg.addColorStop(1, "#3f3b38");
+  g.fillStyle = bg; g.fillRect(0, 0, FW, FH);
+  // cape
+  g.fillStyle = "#151211"; g.beginPath(); g.moveTo(40, FH); g.bezierCurveTo(60, 930, 250, 850, 450, 850); g.bezierCurveTo(650, 850, 840, 930, 860, FH); g.fill();
+  // neck
+  g.fillStyle = shade(skin, -18); g.fillRect(385, 650, 130, 230);
+  // ears
+  g.fillStyle = shade(skin, -8);
+  g.beginPath(); g.ellipse(282, 505, 26, 50, 0, 0, 7); g.fill(); g.beginPath(); g.ellipse(618, 505, 26, 50, 0, 0, 7); g.fill();
+  // head
+  g.fillStyle = skin; g.beginPath(); g.ellipse(450, 500, 168, 218, 0, 0, 7); g.fill();
+  const headClip = () => { g.beginPath(); g.ellipse(450, 500, 170, 220, 0, 0, 7); };
+  // beard
+  g.save(); headClip(); g.clip();
+  if (kind === "avant") {
+    g.fillStyle = hair; g.globalAlpha = .55;
+    for (let i = 0; i < 900; i++) { const a = r() * Math.PI, rad = 150 + r() * 30; const x = 450 + Math.cos(a) * rad * r(), y = 560 + Math.sin(a) * 160 * (0.4 + r() * .6); g.fillRect(x, y, 3, 7); }
+    g.globalAlpha = 1;
+  } else {
+    g.fillStyle = hair; g.globalAlpha = .82;
+    g.beginPath(); g.moveTo(290, 540); g.quadraticCurveTo(300, 690, 450, 722); g.quadraticCurveTo(600, 690, 610, 540); g.lineTo(590, 545); g.quadraticCurveTo(560, 650, 450, 660); g.quadraticCurveTo(340, 650, 310, 545); g.closePath(); g.fill();
+    g.beginPath(); g.ellipse(450, 640, 62, 22, 0, 0, 7); g.fill();
+    g.globalAlpha = 1;
+  }
+  g.restore();
+  // eyes on the canonical line
+  for (const ex of [385, 515]) {
+    g.fillStyle = "#f4eee6"; g.beginPath(); g.ellipse(ex, EYE, 26, 12, 0, 0, 7); g.fill();
+    g.fillStyle = "#2a1a12"; g.beginPath(); g.arc(ex, EYE, 10, 0, 7); g.fill();
+    g.strokeStyle = hair; g.lineWidth = 9; g.lineCap = "round"; g.beginPath(); g.moveTo(ex - 32, EYE - 38); g.quadraticCurveTo(ex, EYE - 50, ex + 32, EYE - 38); g.stroke();
+  }
+  g.strokeStyle = shade(skin, -30); g.lineWidth = 5; g.beginPath(); g.moveTo(450, 500); g.lineTo(440, 565); g.lineTo(462, 572); g.stroke();
+  g.strokeStyle = "#7a3b2e"; g.lineWidth = 6; g.beginPath(); g.moveTo(410, 620); g.quadraticCurveTo(450, 632, 490, 620); g.stroke();
+  // hair
+  g.fillStyle = hair;
+  if (kind === "avant") {
+    for (let i = 0; i < 260; i++) {
+      const a = Math.PI + r() * Math.PI, rad = 175 + r() * 70;
+      g.beginPath(); g.arc(450 + Math.cos(a) * rad * .95, 430 + Math.sin(a) * rad * .9, 30 + r() * 34, 0, 7); g.fill();
+    }
+    for (let i = 0; i < 70; i++) { const side = r() < .5 ? -1 : 1; g.beginPath(); g.arc(450 + side * (170 + r() * 40), 420 + r() * 230, 24 + r() * 22, 0, 7); g.fill(); }
+    for (let i = 0; i < 34; i++) { g.beginPath(); g.ellipse(330 + r() * 240, 360 + r() * 50, 20, 46, (r() - .5), 0, 7); g.fill(); }
+  } else {
+    g.save(); g.beginPath(); g.ellipse(450, 470, 182, 260, 0, Math.PI, 0); g.rect(0, 0, 0, 0); g.clip();
+    g.beginPath(); g.ellipse(450, 395, 178, 120, 0, Math.PI, 0); g.lineTo(628, 395); g.fill();
+    const fade = g.createLinearGradient(0, 330, 0, 470); fade.addColorStop(0, hair); fade.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = fade; g.fillRect(270, 330, 360, 140);
+    g.restore();
+    g.fillStyle = hair; for (let i = 0; i < 60; i++) { g.beginPath(); g.arc(360 + r() * 180, 285 + r() * 30, 14 + r() * 12, 0, 7); g.fill(); }
+  }
+  return cv;
+}
+function shade(hex, amt) { const n = parseInt(hex.slice(1), 16); const f = (x) => Math.max(0, Math.min(255, x + amt)); return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`; }
+
+/* ---------- photo framing ---------- */
+function newPhoto(src) { return { src, w: src.width, h: src.height, s: 1, x: 0, y: 0, _cache: null, _key: "" }; }
+function drawPhoto(ctx, p, k) { // k = output scale relative to FW
+  const base = Math.max(FW / p.w, FH / p.h) * p.s;
+  const w = p.w * base, h = p.h * base;
+  ctx.fillStyle = "#2a2522"; ctx.fillRect(0, 0, FW * k, FH * k);
+  ctx.drawImage(p.src, (FW / 2 - w / 2 + p.x) * k, (FH / 2 - h / 2 + p.y) * k, w * k, h * k);
+}
+function gradedFrame(p) { // full-res frame with BRUTE colour grade
+  const key = `${p.s}|${p.x}|${p.y}`;
+  if (p._cache && p._key === key) return p._cache;
+  const cv = document.createElement("canvas"); cv.width = FW; cv.height = FH;
+  const ctx = cv.getContext("2d"); drawPhoto(ctx, p, 1);
+  const im = ctx.getImageData(0, 0, FW, FH), d = im.data;
+  for (let i = 0; i < d.length; i += 4) {
+    let r = d[i], g = d[i + 1], b = d[i + 2]; const l = .3 * r + .59 * g + .11 * b;
+    r = l + (r - l) * .86; g = l + (g - l) * .86; b = l + (b - l) * .86;
+    d[i] = (r - 128) * 1.08 + 134; d[i + 1] = (g - 128) * 1.08 + 129; d[i + 2] = (b - 128) * 1.08 + 120;
+  }
+  ctx.putImageData(im, 0, 0);
+  p._cache = cv; p._key = key; return cv;
+}
+async function fileToCanvas(file) {
+  const url = URL.createObjectURL(file);
+  const img = await loadImg(url); URL.revokeObjectURL(url);
+  if (!img) return null;
+  const max = 1800, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+  const cv = document.createElement("canvas"); cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+  cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height); return cv;
+}
+
+/* ---------- composition ---------- */
+function cover(ctx, src, x, y, w, h, focus = .42) {
+  const sc = Math.max(w / FW, h / FH), sw = FW * sc, sh = FH * sc;
+  let dx = x + (w - sw) / 2, dy = y + h * focus - (EYE / FH) * sh;
+  dy = Math.min(y, Math.max(y + h - sh, dy));
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.drawImage(src, dx, dy, sw, sh); ctx.restore();
+}
+function bgCover(ctx, img, W, H) { if (!img) return; const s = Math.max(W / img.width, H / img.height); ctx.drawImage(img, (W - img.width * s) / 2, (H - img.height * s) / 2, img.width * s, img.height * s); }
+function logo(ctx, img, cx, y, w) { if (!img) return 0; const h = w * img.height / img.width; ctx.drawImage(img, cx - w / 2, y, w, h); return h; }
+function tag(ctx, text, x, y, bg, fg, size = 40, anchor = "left") {
+  ctx.font = `900 ${size}px Merta, "Arial Black", sans-serif`; ctx.textBaseline = "alphabetic";
+  const tw = ctx.measureText(text).width, px = size * .42, h = size * 1.22, w = tw + px * 2;
+  const x0 = anchor === "right" ? x - w : x;
+  ctx.fillStyle = bg; ctx.fillRect(x0, y, w, h); ctx.fillStyle = fg; ctx.fillText(text, x0 + px, y + size * .98);
+}
+function pair(x, y, w, h, gap, vertical) {
+  return vertical ? [[x, y, w, (h - gap) / 2], [x, y + (h + gap) / 2, w, (h - gap) / 2]]
+                  : [[x, y, (w - gap) / 2, h], [x + (w + gap) / 2, y, (w - gap) / 2, h]];
+}
+function pattern(ctx, W, H, size, color) {
+  ctx.fillStyle = color; ctx.font = `900 ${size}px Merta, "Arial Black", sans-serif`; ctx.textBaseline = "alphabetic";
+  const word = "BRUTE ", ww = ctx.measureText(word).width, step = size * .93;
+  let row = 0;
+  for (let y = size * .85; y < H + size; y += step, row++) {
+    for (let x = -((row * .34) % 1) * ww; x < W; x += ww) ctx.fillText(word, x, y);
+  }
+}
+function grainPass(ctx, W, H, amt = 24, seed = 3) {
+  const im = ctx.getImageData(0, 0, W, H), d = im.data, r = rng(seed);
+  for (let i = 0; i < d.length; i += 4) { const n = (r() - .5) * amt; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+  ctx.putImageData(im, 0, 0);
+}
+function compose(cv, fmt, tpl, A, B, opts = {}) {
+  const [W, H] = FORMATS[fmt], k = opts.scale || 1;
+  cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+  const ctx = cv.getContext("2d"); ctx.setTransform(k, 0, 0, k, 0, 0);
+  const tall = fmt === "9x16", m = tall ? 64 : 54;
+  ctx.fillStyle = C.black; ctx.fillRect(0, 0, W, H);
+
+  if (tpl === "degrade") {
+    bgCover(ctx, IMG.solaire, W, H);
+    const lw = tall ? 600 : 430, ly = tall ? m + 30 : m - 6;
+    const lh = logo(ctx, IMG.logoCreme, W / 2, ly, lw);
+    const top = ly + lh + (tall ? 64 : 34), bottom = H - m;
+    const R = pair(m, top, W - 2 * m, bottom - top, 18, tall);
+    cover(ctx, A, ...R[0]); cover(ctx, B, ...R[1]);
+    tag(ctx, "AVANT", R[0][0] + 22, R[0][1] + R[0][3] - 82, C.black, C.creme, tall ? 46 : 38);
+    tag(ctx, "APRÈS", R[1][0] + 22, R[1][1] + R[1][3] - 82, C.papaye, C.creme, tall ? 46 : 38);
+  }
+  else if (tpl === "motif") {
+    ctx.fillStyle = C.off; ctx.fillRect(0, 0, W, H);
+    pattern(ctx, W, H, tall ? 128 : 112, C.papaye);
+    const band = tall ? 230 : 160;
+    const R = pair(m + 10, m + 10, W - 2 * (m + 10), H - band - 2 * (m + 10), 26, tall);
+    for (const [i, rc] of R.entries()) {
+      ctx.fillStyle = C.off; ctx.fillRect(rc[0] - 12, rc[1] - 12, rc[2] + 24, rc[3] + 24);
+      cover(ctx, i ? B : A, ...rc);
+    }
+    tag(ctx, "AVANT", R[0][0] + 20, R[0][1] + 20, C.off, C.papaye, tall ? 44 : 36);
+    tag(ctx, "APRÈS", R[1][0] + 20, R[1][1] + 20, C.papaye, C.creme, tall ? 44 : 36);
+    ctx.fillStyle = C.papaye; ctx.fillRect(0, H - band, W, band);
+    const lw = tall ? 520 : 380; logo(ctx, IMG.logoCreme, W / 2, H - band / 2 - (lw / 3.726) / 2, lw);
+  }
+  else if (tpl === "plein") {
+    cover(ctx, B, 0, 0, W, H, tall ? .36 : .40);
+    const g = ctx.createLinearGradient(0, H * .5, 0, H);
+    g.addColorStop(0, "rgba(231,63,18,0)"); g.addColorStop(.55, "rgba(231,63,18,.55)"); g.addColorStop(1, "rgba(231,63,18,.95)");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const iw = tall ? 370 : 290, ih = iw * 4 / 3;
+    ctx.fillStyle = C.off; ctx.fillRect(m - 10, m - 10, iw + 20, ih + 20);
+    cover(ctx, A, m, m, iw, ih);
+    tag(ctx, "AVANT", m, m + ih + 10, C.black, C.creme, tall ? 38 : 32);
+    tag(ctx, "APRÈS", W - m, m, C.papaye, C.creme, tall ? 46 : 38, "right");
+    const lw = tall ? 640 : 470; logo(ctx, IMG.logoCreme, W / 2, H - m - lw / 3.726 - (tall ? 30 : 0), lw);
+  }
+  else if (tpl === "split") {
+    const band = tall ? 170 : 140;
+    if (tall) {
+      const h = (H - band) / 2;
+      cover(ctx, A, 0, 0, W, h); cover(ctx, B, 0, h + band, W, h);
+      ctx.fillStyle = C.papaye; ctx.fillRect(0, h, W, band);
+      logo(ctx, IMG.logoCreme, W / 2, h + band / 2 - 440 / 3.726 / 2, 440);
+      tag(ctx, "AVANT", m, m, C.black, C.creme, 46);
+      tag(ctx, "APRÈS", m, H - m - 56, C.papaye, C.creme, 46);
+    } else {
+      const w = (W - 14) / 2, h = H - band;
+      cover(ctx, A, 0, 0, w, h); cover(ctx, B, w + 14, 0, w, h);
+      ctx.fillStyle = C.papaye; ctx.fillRect(w, 0, 14, h); ctx.fillRect(0, h, W, band);
+      logo(ctx, IMG.logoCreme, W / 2, h + band / 2 - 400 / 3.726 / 2, 400);
+      tag(ctx, "AVANT", m - 20, m - 20, C.black, C.creme, 36);
+      tag(ctx, "APRÈS", w + 14 + m - 20, m - 20, C.papaye, C.creme, 36);
+    }
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (opts.grain !== false) grainPass(ctx, cv.width, cv.height, 26, 9);
+  return cv;
+}
+
+/* ---------- navigation ---------- */
+const screens = ["home", "client", "shoot", "compose", "send", "manager"];
+function show(name) {
+  if (name !== "shoot") stopCam();
+  for (const s of screens) $("s-" + s).hidden = s !== name;
+  window.scrollTo(0, 0);
+}
+function steps(el, n) { el.innerHTML = ""; for (let i = 1; i <= 5; i++) { const s = document.createElement("span"); if (i <= n) s.className = "on"; el.appendChild(s); } }
+document.querySelectorAll(".steps[data-step]").forEach(el => steps(el, +el.dataset.step));
+document.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
+
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => t.hidden = true, 3200); }
+
+/* role switch */
+function setRole(r) {
+  S.role = r; $("roleC").setAttribute("aria-pressed", r === "coiffeur"); $("roleG").setAttribute("aria-pressed", r === "gerant");
+  if (r === "gerant") { renderManager(); show("manager"); } else { renderHome(); show("home"); }
+}
+$("roleC").onclick = () => setRole("coiffeur"); $("roleG").onclick = () => setRole("gerant");
+
+/* ---------- storage: this phone only (IndexedDB), memory fallback ---------- */
+const DB = (() => {
+  let dbp = null, mem = [];
+  function open() {
+    if (!dbp) dbp = new Promise((res) => {
+      try {
+        const rq = indexedDB.open("brute-studio", 1);
+        rq.onupgradeneeded = () => rq.result.createObjectStore("tx", { keyPath: "id" });
+        rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null); rq.onblocked = () => res(null);
+      } catch { res(null); }
+    });
+    return dbp;
+  }
+  function run(db, mode, fn) {
+    return new Promise((res) => {
+      try { const t = db.transaction("tx", mode), r = fn(t.objectStore("tx")); t.oncomplete = () => res(r ? r.result : true); t.onerror = t.onabort = () => res(null); }
+      catch { res(null); }
+    });
+  }
+  return {
+    async all() { const db = await open(); if (!db) return mem.slice(); return (await run(db, "readonly", st => st.getAll())) || mem.slice(); },
+    async put(rec) { mem = mem.filter(x => x.id !== rec.id); mem.push(rec); const db = await open(); if (db) await run(db, "readwrite", st => st.put(rec)); },
+    async del(id) { mem = mem.filter(x => x.id !== id); const db = await open(); if (db) await run(db, "readwrite", st => st.delete(id)); },
+  };
+})();
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+};
+S.me = store.get("brute-me") || "";
+const urls = new Map();
+function urlFor(rec, field) { const k = rec.id + field; if (!urls.has(k)) urls.set(k, URL.createObjectURL(rec[field])); return urls.get(k); }
+function dropUrls(id) { for (const f of ["png", "thumb"]) { const k = id + f; if (urls.has(k)) { URL.revokeObjectURL(urls.get(k)); urls.delete(k); } } }
+const toBlob = (cv, type, q) => new Promise(r => cv.toBlob(r, type, q));
+const YEAR = 365 * 24 * 3600 * 1000;
+async function loadHistory() {
+  const all = await DB.all(), now = Date.now();
+  for (const r of all) if (now - r.date > YEAR) await DB.del(r.id);
+  S.history = all.filter(r => now - r.date <= YEAR).sort((a, b) => b.date - a.date);
+}
+
+/* ---------- coiffeur name ---------- */
+function renderMe() { $("meName").textContent = S.me || "?"; $("nameCard").hidden = !!S.me; $("meInput").value = S.me; }
+$("nameCard").onsubmit = (e) => { e.preventDefault(); const v = $("meInput").value.trim(); if (!v) return; S.me = v; store.set("brute-me", v); renderMe(); renderHome(); };
+$("meBtn").onclick = () => { $("nameCard").hidden = false; $("meInput").focus(); };
+
+/* ---------- step 1: client ---------- */
+$("startBtn").onclick = () => {
+  if (!S.me) { $("nameCard").hidden = false; $("meInput").focus(); toast("Indique d'abord ton prénom de coiffeur."); return; }
+  S.client = {}; S.avant = S.apres = null; S.recId = "tx-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  for (const id of ["cPrenom", "cTel", "cMail"]) $(id).value = "";
+  $("okPhoto").checked = false; $("okPub").checked = false; validClient();
+  show("client");
+};
+function validClient() { $("toAvant").disabled = !($("okPhoto").checked && $("cPrenom").value.trim()); }
+$("okPhoto").onchange = validClient; $("cPrenom").oninput = validClient;
+$("toAvant").onclick = () => {
+  S.client = { prenom: $("cPrenom").value.trim(), tel: $("cTel").value.trim(), mail: $("cMail").value.trim(), pub: $("okPub").checked };
+  openShoot("avant");
+};
+
+/* ---------- steps 2-3: shoot & align ---------- */
+const frameCv = $("frameCv"), fctx = frameCv.getContext("2d"), ghostCv = $("ghostCv");
+function cur() { return S[S.which]; }
+function openShoot(which) {
+  S.which = which;
+  const av = which === "avant";
+  steps($("shootSteps"), av ? 2 : 3);
+  $("shootEyebrow").textContent = av ? "Étape 2 sur 5" : "Étape 3 sur 5";
+  $("shootTitle").textContent = av ? "Photo avant" : "Photo après";
+  $("ghostBtn").hidden = av;
+  ghostCv.hidden = av || !S.ghost;
+  if (!av && S.avant) { const g = ghostCv.getContext("2d"); g.setTransform(1, 0, 0, 1, 0, 0); drawPhoto(g, S.avant, .5); }
+  show("shoot");
+  if (cur()) drawFrame(); else startCam();
+}
+let stream = null, facing = "environment", camOk = false;
+const cam = $("cam");
+function stopCam() { if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; } cam.srcObject = null; }
+async function startCam() {
+  stopCam(); camOk = false; drawFrame();
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { $("camErr").textContent = "Ce navigateur ne donne pas accès à la caméra. Ouvre l'appli dans Safari, ou utilise la galerie."; drawFrame(); return; }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1440 } } });
+    if (cur() || $("s-shoot").hidden) { stopCam(); return; }
+    cam.srcObject = stream; cam.classList.toggle("mirror", facing === "user");
+    await cam.play().catch(() => {});
+    camOk = true;
+  } catch (e) {
+    $("camErr").textContent = e && e.name === "NotAllowedError"
+      ? "Accès à la caméra refusé. Autorise-le : Réglages, Safari, Appareil photo, puis recharge la page. Sinon utilise la galerie."
+      : "Caméra indisponible. Utilise la galerie.";
+  }
+  drawFrame();
+}
+function capture() {
+  const vw = cam.videoWidth, vh = cam.videoHeight;
+  if (!vw || !vh) { toast("La caméra démarre, réessaie dans une seconde."); return; }
+  let cw = vw, ch = vw * 4 / 3; if (ch > vh) { ch = vh; cw = vh * 3 / 4; }
+  const k = Math.min(1, 2000 / ch), cv = document.createElement("canvas");
+  cv.width = Math.round(cw * k); cv.height = Math.round(ch * k);
+  const g = cv.getContext("2d");
+  if (facing === "user") { g.translate(cv.width, 0); g.scale(-1, 1); }
+  g.drawImage(cam, (vw - cw) / 2, (vh - ch) / 2, cw, ch, 0, 0, cv.width, cv.height);
+  S[S.which] = newPhoto(cv); stopCam(); drawFrame();
+}
+$("shutter").onclick = () => camOk ? capture() : $("fileIn").click();
+$("flipBtn").onclick = () => { facing = facing === "environment" ? "user" : "environment"; startCam(); };
+$("retakeBtn").onclick = () => { S[S.which] = null; startCam(); };
+function drawFrame() {
+  const p = cur(), av = S.which === "avant";
+  cam.hidden = !!p || !camOk; frameCv.hidden = !p;
+  $("frameEmpty").hidden = !!p || camOk;
+  $("camCtl").hidden = !!p; $("editCtl").hidden = !p;
+  $("shootHint").textContent = !p
+    ? (av ? "Place le client : les yeux sur la ligne orange, le visage dans l'ovale. Puis appuie sur le bouton." : "La photo avant est en transparence : superpose les yeux, puis appuie sur le bouton.")
+    : "Ajuste si besoin : glisse pour déplacer, pince ou utilise le curseur pour zoomer.";
+  $("shootNext").disabled = !p; $("zoom").disabled = !p;
+  fctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (!p) { fctx.fillStyle = "#2a2522"; fctx.fillRect(0, 0, 450, 600); return; }
+  $("zoom").value = p.s; drawPhoto(fctx, p, .5);
+}
+async function takeFile(e) {
+  const f = e.target.files && e.target.files[0]; e.target.value = "";
+  if (!f) return;
+  const cv = await fileToCanvas(f);
+  if (!cv) { toast("Cette image ne s'ouvre pas. Réessaie avec une autre photo."); return; }
+  S[S.which] = newPhoto(cv); stopCam(); drawFrame();
+}
+$("fileIn").onchange = takeFile; $("libIn").onchange = takeFile;
+$("demoBtn").onclick = () => { S[S.which] = newPhoto(demoPortrait(S.which, 0)); stopCam(); drawFrame(); };
+$("zoom").oninput = (e) => { const p = cur(); if (p) { p.s = +e.target.value; drawFrame(); } };
+$("ghostBtn").onclick = () => { S.ghost = !S.ghost; ghostCv.hidden = !S.ghost; $("ghostBtn").setAttribute("aria-pressed", S.ghost); $("ghostBtn").textContent = S.ghost ? "Avant visible" : "Avant masqué"; };
+const pts = new Map(); let last = null;
+const frame = $("frame");
+frame.addEventListener("pointerdown", (e) => { if (!cur()) return; frame.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); last = null; });
+frame.addEventListener("pointermove", (e) => {
+  const p = cur(); if (!p || !pts.has(e.pointerId)) return;
+  const prev = pts.get(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  const ratio = FW / frame.clientWidth;
+  if (pts.size === 1) { p.x += (e.clientX - prev.x) * ratio; p.y += (e.clientY - prev.y) * ratio; }
+  else if (pts.size === 2) {
+    const [a, b] = [...pts.values()], dist = Math.hypot(a.x - b.x, a.y - b.y);
+    if (last) p.s = Math.min(2.6, Math.max(.6, p.s * dist / last)); last = dist;
+  }
+  drawFrame();
+});
+const up = (e) => { pts.delete(e.pointerId); last = null; };
+frame.addEventListener("pointerup", up); frame.addEventListener("pointercancel", up);
+$("shootBack").onclick = () => S.which === "avant" ? show("client") : openShoot("avant");
+$("shootNext").onclick = () => S.which === "avant" ? openShoot("apres") : openCompose();
+
+/* ---------- step 4: compose ---------- */
+const tplCanvases = {};
+function buildTplPicker() {
+  const box = $("tpls"); box.innerHTML = "";
+  for (const t of TEMPLATES) {
+    const b = document.createElement("button"); b.className = "tpl"; b.dataset.tpl = t.id; b.setAttribute("aria-pressed", t.id === S.tpl);
+    const cv = document.createElement("canvas"); tplCanvases[t.id] = cv;
+    const lab = document.createElement("span"); lab.textContent = t.name;
+    b.append(cv, lab); b.onclick = () => { S.tpl = t.id; refreshCompose(); };
+    box.appendChild(b);
+  }
+}
+buildTplPicker();
+function refreshCompose() {
+  const A = gradedFrame(S.avant), B = gradedFrame(S.apres);
+  compose($("outCv"), S.fmt, S.tpl, A, B, { grain: S.grain, scale: .5 });
+  document.querySelectorAll(".tpl").forEach(b => b.setAttribute("aria-pressed", b.dataset.tpl === S.tpl));
+  document.querySelectorAll("#fmtChips .chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.fmt === S.fmt));
+  for (const t of TEMPLATES) { const cv = tplCanvases[t.id]; compose(cv, S.fmt, t.id, A, B, { grain: false, scale: .16 }); cv.style.aspectRatio = FORMATS[S.fmt][0] + "/" + FORMATS[S.fmt][1]; }
+}
+async function openCompose() { await ready; show("compose"); refreshCompose(); }
+document.querySelectorAll("#fmtChips .chip").forEach(b => b.onclick = () => { S.fmt = b.dataset.fmt; refreshCompose(); });
+$("grainSw").onclick = () => { S.grain = !S.grain; $("grainSw").setAttribute("aria-checked", S.grain); refreshCompose(); };
+$("composeBack").onclick = () => openShoot("apres");
+
+/* ---------- step 5: send ---------- */
+let current = null;
+const digits = (t) => (t || "").replace(/[^\d+]/g, "");
+function defaultMsg(p) { return `Salut ${p} ! Voici ton avant/après chez BRUTE. Merci pour ta confiance, à très vite.\nBRUTE · coiffure masculine`; }
+function refreshLinks() {
+  const msg = $("msgText").value, c = current;
+  $("smsLink").href = `sms:${digits(c.tel)}&body=${encodeURIComponent(msg)}`;
+  $("mailLink").href = `mailto:${c.mail}?subject=${encodeURIComponent("Ton avant/après BRUTE")}&body=${encodeURIComponent(msg)}`;
+}
+$("msgText").oninput = refreshLinks;
+$("toSend").onclick = async () => {
+  const btn = $("toSend"); btn.disabled = true; btn.textContent = "Préparation…";
+  try {
+    const cv = document.createElement("canvas");
+    compose(cv, S.fmt, S.tpl, gradedFrame(S.avant), gradedFrame(S.apres), { grain: S.grain });
+    const png = await toBlob(cv, "image/png");
+    const tc = document.createElement("canvas");
+    compose(tc, "1x1", S.tpl, gradedFrame(S.avant), gradedFrame(S.apres), { grain: false, scale: .4 });
+    const thumb = await toBlob(tc, "image/jpeg", .85);
+    dropUrls(S.recId);
+    current = { id: S.recId, ...S.client, coiffeur: S.me, date: Date.now(), fmt: S.fmt, tpl: S.tpl, png, thumb };
+    await DB.put(current);
+    await loadHistory();
+  } finally { btn.disabled = false; btn.textContent = "Envoyer"; }
+  const c = current;
+  $("sendTitle").textContent = `Pour ${c.prenom}`;
+  $("finalImg").src = urlFor(c, "png");
+  $("msgText").value = defaultMsg(c.prenom);
+  $("smsTo").textContent = c.tel || "pas de numéro";
+  $("copyTel").hidden = !c.tel; $("smsLink").hidden = !c.tel;
+  $("mailOpt").hidden = !c.mail; $("mailTo").textContent = c.mail;
+  for (const id of ["pngMsg", "copyInfo", "shareMsg"]) $(id).hidden = true;
+  refreshLinks();
+  show("send");
+};
+async function copyText(text, label) {
+  const info = $("copyInfo");
+  try { await navigator.clipboard.writeText(text); }
+  catch {
+    const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok = false; try { ok = document.execCommand("copy"); } catch {}
+    ta.remove();
+    if (!ok) { info.hidden = false; info.textContent = "La copie est bloquée ici : sélectionne le texte à la main."; return; }
+  }
+  info.hidden = false; info.textContent = `${label} copié.`; toast(`${label} copié.`);
+}
+$("copyMsg").onclick = () => copyText($("msgText").value, "Message");
+$("copyTel").onclick = () => copyText(current.tel, "Numéro");
+$("copyMail").onclick = () => copyText(current.mail, "Adresse");
+function fileFor(rec) {
+  const name = `BRUTE-${(rec.prenom || "client").normalize("NFD").replace(/[^\w-]/g, "")}-${new Date(rec.date).toISOString().slice(0, 10)}.png`;
+  return new File([rec.png], name, { type: "image/png" });
+}
+function canShareFile(f) { try { return !!(navigator.canShare && navigator.canShare({ files: [f] })); } catch { return false; } }
+function downloadFallback(rec, f) {
+  const a = document.createElement("a"); a.href = urlFor(rec, "png"); a.download = f.name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function shareVisual(rec, text, msgEl) {
+  const f = fileFor(rec), say = (t) => { if (msgEl) { msgEl.hidden = false; msgEl.textContent = t; } };
+  if (canShareFile(f)) {
+    try { await navigator.share(text ? { files: [f], text } : { files: [f] }); say("Partagé."); }
+    catch (e) { if (!e || e.name !== "AbortError") say("Le partage n'a pas marché. Appuie longuement sur l'image pour l'enregistrer."); }
+  } else { downloadFallback(rec, f); say("Image téléchargée. Si rien ne s'ouvre, appuie longuement sur l'image."); }
+}
+async function saveVisual(rec, msgEl) { return shareVisual(rec, "", msgEl); }
+$("shareBtn").onclick = () => shareVisual(current, $("msgText").value, $("shareMsg"));
+$("pngBtn").onclick = () => saveVisual(current, $("pngMsg"));
+$("sendBack").onclick = () => show("compose");
+$("finishBtn").onclick = () => {
+  toast(`Transformation de ${current.prenom} enregistrée.`);
+  renderHome(); show("home");
+};
+
+/* ---------- history, home & manager ---------- */
+const fmtDate = (t) => new Date(t).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+const expiry = (t) => new Date(t + YEAR).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+function pillFor(h) { const p = document.createElement("span"); p.className = "pill " + (h.pub ? "pub" : "priv"); p.textContent = h.pub ? "Publiable" : "Privé"; return p; }
+function renderHome() {
+  renderMe();
+  const mine = S.history.filter(h => h.coiffeur === S.me), week = Date.now() - 7 * 864e5;
+  $("weekCount").textContent = mine.filter(h => h.date >= week).length;
+  $("hPub").textContent = mine.filter(h => h.pub).length; $("hPriv").textContent = mine.filter(h => !h.pub).length;
+  $("today").textContent = new Date().toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+  const box = $("homeList"); box.innerHTML = "";
+  $("homeEmpty").hidden = mine.length > 0;
+  for (const h of mine.slice(0, 6)) {
+    const row = document.createElement("div"); row.className = "item"; row.tabIndex = 0; row.setAttribute("role", "button");
+    const img = document.createElement("img"); img.src = urlFor(h, "thumb"); img.alt = "";
+    const info = document.createElement("div"); const b = document.createElement("b"); b.textContent = h.prenom;
+    const sm = document.createElement("small"); sm.textContent = `${fmtDate(h.date)} · ${h.tel || h.mail || "sans contact"}`;
+    info.append(b, sm);
+    row.append(img, info, pillFor(h)); row.onclick = () => openSheet(h);
+    row.onkeydown = (e) => { if (e.key === "Enter") openSheet(h); };
+    box.appendChild(row);
+  }
+}
+let teamFilter = "Tous";
+function renderManager() {
+  const team = [...new Set(S.history.map(h => h.coiffeur))];
+  if (teamFilter !== "Tous" && !team.includes(teamFilter)) teamFilter = "Tous";
+  const list = S.history.filter(h => teamFilter === "Tous" || h.coiffeur === teamFilter);
+  $("kTotal").textContent = list.length; $("kPub").textContent = list.filter(h => h.pub).length; $("kTeam").textContent = team.length;
+  const chips = $("teamChips"); chips.innerHTML = "";
+  for (const n of ["Tous", ...team]) {
+    const c = document.createElement("button"); c.className = "chip"; c.textContent = n; c.setAttribute("aria-pressed", n === teamFilter);
+    c.onclick = () => { teamFilter = n; renderManager(); }; chips.appendChild(c);
+  }
+  const g = $("gallery"); g.innerHTML = ""; $("galEmpty").hidden = list.length > 0;
+  for (const h of list) {
+    const card = document.createElement("button"); card.className = "card";
+    const img = document.createElement("img"); img.src = urlFor(h, "thumb"); img.alt = `Avant/après de ${h.prenom}`;
+    const meta = document.createElement("div"); meta.className = "meta";
+    const b = document.createElement("b"); b.textContent = h.prenom; meta.append(b, pillFor(h));
+    const sm = document.createElement("small"); sm.textContent = `${h.coiffeur} · ${fmtDate(h.date)}`;
+    const ex = document.createElement("small"); ex.textContent = `Supprimé le ${expiry(h.date)}`;
+    card.append(img, meta, sm, ex); card.onclick = () => openSheet(h);
+    g.appendChild(card);
+  }
+}
+let sheetRec = null;
+function openSheet(h) {
+  sheetRec = h;
+  $("sheetImg").src = urlFor(h, "png");
+  $("sheetTxt").textContent = `${h.prenom} · par ${h.coiffeur} · ${fmtDate(h.date)} · ${h.pub ? "publication autorisée" : "ne pas publier"}${h.tel ? " · " + h.tel : ""}`;
+  $("sheetDel").textContent = "Supprimer"; $("sheetDel").dataset.armed = "";
+  $("sheet").hidden = false;
+}
+$("sheetSave").onclick = () => sheetRec && saveVisual(sheetRec, null);
+$("sheetDel").onclick = async () => {
+  const b = $("sheetDel");
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "Confirmer la suppression"; return; }
+  await DB.del(sheetRec.id); dropUrls(sheetRec.id); await loadHistory();
+  $("sheet").hidden = true; toast("Transformation supprimée.");
+  S.role === "gerant" ? renderManager() : renderHome();
+};
+$("sheetClose").onclick = () => $("sheet").hidden = true;
+$("sheet").onclick = (e) => { if (e.target.id === "sheet") $("sheet").hidden = true; };
+
+ready.then(loadHistory).then(() => { renderHome(); });
+})();
+</script>
+</body>
+</html>
